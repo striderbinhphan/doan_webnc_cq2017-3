@@ -1,0 +1,20 @@
+{
+  "name": "doan_webnc_cq2017-3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/striderbinhphan/doan_webnc_cq2017-3.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/striderbinhphan/doan_webnc_cq2017-3/issues"
+  },
+  "homepage": "https://github.com/striderbinhphan/doan_webnc_cq2017-3#readme"
+}
