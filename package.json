@@ -19,7 +19,9 @@
   "homepage": "https://github.com/striderbinhphan/doan_webnc_cq2017-3#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "knex": "^0.95.6",
     "morgan": "^1.10.0",
+    "mysql2": "^2.2.5",
     "nodemon": "^2.0.9"
   }
 }
