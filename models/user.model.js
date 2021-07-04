@@ -30,6 +30,13 @@ module.exports = {
             refresh_token: refreshToken
         })
     },
+    async isValidRFToken(user_id, refreshToken){
+        const user = await db('user').where('user_id',user_id);
+        if(user.length === 0){
+            return false;
+        }
+        return user[0].refresh_token === refreshToken;
+    },
     addOTPTokenToDB(user_email,otpToken){
         return db('user').where('user_email',user_email).update({
             user_accessotp: otpToken

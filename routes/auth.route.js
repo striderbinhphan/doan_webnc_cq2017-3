@@ -32,8 +32,9 @@ router.post('/login',async (req,res)=>{
         })
     }
     const payload = {
-        userID: user.user_id,
-        username: user.user_username
+        user_id: user.user_id,
+        user_username: user.user_username,
+        user_email: user.user_email,
     }
     const opts = {
         expiresIn: 5 * 60 
@@ -119,5 +120,29 @@ router.post('/resend',async(req,res)=>{
     await userModel.addOTPTokenToDB(user_email,otpToken);
     const result = await authServices.sendMail(req.body.user_email,otpCode);
     res.status(200).json({status:"OTP 's sent to your email! Check"});
+})
+router.post('/refresh',async(req,res)=>{
+    const {accessToken, refreshToken} = req.body;
+    const decodedData = jwt.verify(accessToken, SECRET_KEY, {
+        ignoreExpiration: true
+    });
+    console.log(decodedData.user_id);
+    const ret = await userModel.isValidRFToken(decodedData.user_id, refreshToken);
+    console.log(ret);
+    if (ret === true) {
+        const payload = {
+            user_id: decodedData.user_id,
+            user_username: decodedData.user_username,
+            user_email: decodedData.user_email,
+        }
+        const newAccessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: 5 * 60 });
+        return res.json({
+            accessToken: newAccessToken
+        });
+    }
+
+    return res.status(400).json({
+        message: 'Refresh token is revoked!'
+    });
 })
 module.exports = router;
