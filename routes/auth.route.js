@@ -9,7 +9,12 @@ const authServices = require('../services/auth.services')
 const STATUS_VERIFY = process.env.STATUS_VERIFY || "verify";
 const STATUS_ACTIVE = process.env.STATUS_ACTIVE || "active";
 const STATUS_UPDATE = process.env.STATUS_UPDATE || "update";
+
 const SECRET_KEY = process.env.SECRET_KEY || "HCMUSWEBNC";
+
+const ROLE_STUDENT = process.env.ROLE_STUDENT || "student";
+const ROLE_LECTURE = process.env.ROLE_LECTURE || "lecture";
+const ROLE_ADMIN = process.env.ROLE_ADMIN || "admin";
 
 router.get('/',(req,res)=>{
     res.json({hello: "hello from auth services"});
@@ -17,7 +22,7 @@ router.get('/',(req,res)=>{
 router.post('/login',async (req,res)=>{
     const user =await userModel.isExistByUsername(req.body.username);
     if(user === null){
-        res.status(200).json({
+        return res.status(200).json({
             authenticated: false,
         })
     }
@@ -27,7 +32,7 @@ router.post('/login',async (req,res)=>{
         })
     }
     if(!bcrypt.compareSync(req.body.password,user.user_password)){
-        res.status(200).json({
+        return  res.status(200).json({
             authenticated: false,
         })
     }
@@ -35,14 +40,15 @@ router.post('/login',async (req,res)=>{
         user_id: user.user_id,
         user_username: user.user_username,
         user_email: user.user_email,
+        user_role: user.user_role
     }
     const opts = {
-        expiresIn: 5 * 60 
+        expiresIn: 20 * 60 
     }
     const accessToken = jwt.sign(payload,SECRET_KEY,opts);
     const refreshToken = randomString.generate(128);
     await userModel.addRFTokenToDB(user.user_id,refreshToken);
-    return res.json({
+    res.json({
         authenticated: true,
         accessToken,
         refreshToken
@@ -65,7 +71,7 @@ router.post('/register',async(req,res)=>{
     }
     
     user.user_status = STATUS_VERIFY;
-    user.user_role = "student";
+    user.user_role = ROLE_STUDENT;
 
     const otpCode = authServices.generateOTPCode();
     const otpToken = authServices.generateOTPToken(otpCode);
@@ -90,7 +96,7 @@ router.post('/verify',async(req,res)=>{
             status: "Email isn't exist in our services, pls register first",
         })
     }
-    if(user.user_status !== STATUS_VERIFY){
+    if(user.user_status !== STATUS_VERIFY && user.user_status !== STATUS_UPDATE){
         return res.status(200).json({
             status: "Email was activated",
         })
@@ -109,7 +115,7 @@ router.post('/resend',async(req,res)=>{
             status: "Email isn't exist in our services, pls register first",
         })
     }
-    if(user.user_status !== STATUS_VERIFY){
+    if(user.user_status !== STATUS_VERIFY && user.user_status !== STATUS_UPDATE){
         return res.status(200).json({
             status: "Email had been activated",
         })
@@ -134,8 +140,9 @@ router.post('/refresh',async(req,res)=>{
             user_id: decodedData.user_id,
             user_username: decodedData.user_username,
             user_email: decodedData.user_email,
+            user_role: decodedData.user_role
         }
-        const newAccessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: 5 * 60 });
+        const newAccessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: 20 * 60 });
         return res.json({
             accessToken: newAccessToken
         });
