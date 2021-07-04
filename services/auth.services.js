@@ -1,7 +1,16 @@
 const jwt = require('jsonwebtoken');
 const randomstring = require('randomstring');
-require('dotenv').config({path:"../.env"});
-const AUTH_OTP_VERIFY = process.env.AUTH_OTP_VERIFY||"verify";
+const nodemailer = require('nodemailer');
+const {google} = require('googleapis');
+
+
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const REDIRECT_URL = process.env.REDIRECT_URL;
+const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
+
+const STATUS_VERIFY = process.env.STATUS_VERIFY;
+
 module.exports = {
     generateOTPCode(){
         return randomstring.generate({
@@ -12,7 +21,7 @@ module.exports = {
     generateOTPToken(otpCode){
         return jwt.sign({
             otp: otpCode
-        },AUTH_OTP_VERIFY,{
+        },STATUS_VERIFY,{
             expiresIn:"10m"
         });
     },
@@ -27,6 +36,14 @@ module.exports = {
     },
     async sendMail(toEmail, otpCode){
         try{
+            const oauth2Client = new google.auth.OAuth2(
+                CLIENT_ID,
+                CLIENT_SECRET,
+                REDIRECT_URL
+            );
+            oauth2Client.setCredentials({
+                refresh_token: REFRESH_TOKEN
+            })
             const accessToken = await oauth2Client.getAccessToken();
             const transport = nodemailer.createTransport({
                 service:'gmail',
