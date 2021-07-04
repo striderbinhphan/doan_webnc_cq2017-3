@@ -6,12 +6,24 @@ module.exports = {
     addNewUser(user){
         return db('user').insert(user);
     },
-    async getSingleUser(username){
+    async isExistUsername(username){
         const ret = await db('user').where('user_username',username);
-        if(ret === null){
+
+        if(ret.length === 0){
+            
+
             return null;
         }
-        return ret [0];
+        return ret[0];
+    },
+    async isExistEmail(email){
+        const ret = await db('user').where('user_email',email);
+
+        if(ret.length === 0){
+
+            return null;
+        }
+        return ret[0];
     },
     addRFTokenToDB(user_id,refreshToken){
         return db('user').where('user_id',user_id).update({
