@@ -8,7 +8,7 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URL = process.env.REDIRECT_URL;
 const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
-
+const CLIENT_GMAIL = process.env.CLIENT_GMAIL;
 const STATUS_VERIFY = process.env.STATUS_VERIFY;
 
 module.exports = {
@@ -49,7 +49,7 @@ module.exports = {
                 service:'gmail',
                 auth: {
                     type: 'Oauth2',
-                    user: 'pipporkk@gmail.com',
+                    user: CLIENT_GMAIL,
                     clientId: CLIENT_ID,
                     clientSecret: CLIENT_SECRET,
                     refreshToken: REFRESH_TOKEN,
@@ -57,7 +57,7 @@ module.exports = {
                 }
             });
             const mailOptions = {
-                from: "Activation Online Course Account<activated_hcmusstudent@gmail.com>",
+                from: `Activation Online Course Account<${CLIENT_GMAIL}>`,
                 to: `${toEmail}`,
                 subject: "Activate your account",
                 html: `
