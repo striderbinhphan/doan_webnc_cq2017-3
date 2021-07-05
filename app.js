@@ -7,6 +7,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use("/", require("./routes/guest.route"));
 app.use("/user", require("./routes/user.route"));
+app.use("/admin",require ("./routes/admin.route"));
 
 const PORT = config.PORT;
 app.listen(PORT, function () {
