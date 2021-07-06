@@ -3,15 +3,16 @@ const morgan = require('morgan');
 require('dotenv').config();
 const app = express();
 require('express-async-errors') ;
+const path = require('path')
 
 app.use(express.json());
 app.use(morgan('dev'));
 app.get('/',function(req,res){
   res.json({
-      message:'Hello from sakila API'
+      message:'Hello from Online Courses API'
   });
 })
-
+app.use('/uploads',express.static(path.resolve(__dirname, './uploads')));
 app.use('/auth',require('./routes/auth.route'));
 app.use('/user',require('./middlewares/auth.mdw'),require('./routes/user.route'));
 app.use('/student',require('./middlewares/auth.mdw'),require('./routes/student.route'));
