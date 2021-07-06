@@ -15,5 +15,8 @@ module.exports = {
         return db('course').where("course_id",course_id).update({
             course_image: course_image
         });
+    },
+    delete(courseId){
+        return db('course').where('course_id',courseId).del();
     }
 }

@@ -15,5 +15,21 @@ module.exports = {
         return db('videos').where('video_id',videoId).update({
             video_path: videoPath,
         })
+    },
+    updateVideoTitle(videoId,updateVideoTitle){
+        return db('videos').where('video_id',videoId).update({
+            video_title: updateVideoTitle.video_title,
+            preview_status: updateVideoTitle.preview_status
+        })
+    },
+    async getAllVideoBySectionId(sectionId){
+        const list = await db('videos').where('section_id',sectionId);
+        if(list.length === null){
+            return null
+        }
+        return list;
+    },
+    delete(videoId){
+        return db('videos').where('video_id',videoId).del();
     }
 }
