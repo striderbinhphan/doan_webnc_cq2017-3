@@ -1,11 +1,35 @@
 const db = require('../utils/db');
 
 module.exports = {
-    async getSingleVideoBySectionId(section_id){
-        const videoList = await db('videos').where('section_id',section_id);
-        if(videoList.length === null){
+    addNewVideo(newVideo){
+        return db('videos').insert(newVideo);
+    },
+    async getVideoByVideoId(video_id){
+        const ret = await db('videos').where('video_id',video_id);
+        if(ret.length === 0){
             return null;
         }
-        return videoList[0];
+        return ret[0];
     },
+    updateVideo(videoId,videoPath){
+        return db('videos').where('video_id',videoId).update({
+            video_path: videoPath,
+        })
+    },
+    updateVideoTitle(videoId,updateVideoTitle){
+        return db('videos').where('video_id',videoId).update({
+            video_title: updateVideoTitle.video_title,
+            preview_status: updateVideoTitle.preview_status
+        })
+    },
+    async getAllVideoBySectionId(sectionId){
+        const list = await db('videos').where('section_id',sectionId);
+        if(list.length === null){
+            return null
+        }
+        return list;
+    },
+    delete(videoId){
+        return db('videos').where('video_id',videoId).del();
+    }
 }

@@ -26,7 +26,7 @@ module.exports = uploadFile = (type) =>{
     {
         return multer.diskStorage({
             destination: (req,file,cb)=>{
-                cb(null,"../uploads/videos/")
+                cb(null,"./uploads/videos/")
             },
             filename: (req,file,cb)=>{
                 const fileName  = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
@@ -35,8 +35,8 @@ module.exports = uploadFile = (type) =>{
             },
             fileFilter: (req, file, cb) => {
                 const ext = path.extname(file.originalname)
-                if (ext !== '.wav' && ext !== '.mp4') {
-                    return cb(res.status(400).end('only mp4, wav is allowed'), false);
+                if (ext !== '.wav' && ext !== '.mp4' && ext !== '.mkv') {
+                    return cb(res.status(400).end('only mp4, wav, mkv is allowed'), false);
                 }
                 cb(null, true)
             }
