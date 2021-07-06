@@ -16,6 +16,7 @@ app.use('/auth',require('./routes/auth.route'));
 app.use('/user',require('./middlewares/auth.mdw'),require('./routes/user.route'));
 app.use('/student',require('./middlewares/auth.mdw'),require('./routes/student.route'));
 
+app.use('/lecturer',require('./middlewares/lecturerauth.mdw'),require('./routes/lecturer.route'));
 
 app.use('/err',function(req,res){
   throw new Error('Error!');

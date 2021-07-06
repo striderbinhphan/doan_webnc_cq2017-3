@@ -24,7 +24,7 @@ router.get('/me',async (req,res)=>{
         dob: user.user_dob
     }).end();
 });
-router.post('/update-info',async(req,res)=>{
+router.patch('/update-info',async(req,res)=>{
     const {fullname,firstname,lastname,dob}= req.body;
     const user = {
         user_name:fullname,
@@ -38,28 +38,28 @@ router.post('/update-info',async(req,res)=>{
         await userModel.updateUserInfo(accessTokenPayload.user_username,user)
         console.log(user);
         res.status(200).json({
-            update: "update user info success",
+            message: "update user info success",
         });
     }catch(err){
         return res.status(400).json({
-            error: err,
+            message: err,
         });
     }
 })
-router.post('/update-email',async(req,res)=>{
+router.patch('/update-email',async(req,res)=>{
     const {newEmail}= req.body;
     const {accessTokenPayload} = req;
     const isExistUser = await userModel.isExistByEmail(newEmail);
     if(isExistUser !== null){
-        return res.status(200).json({status:"this email has been used! try another"});
+        return res.status(200).json({message:"this email has been used! try another"});
     }
     
 
     const otpCode = authServices.generateOTPCode();
     const otpToken = authServices.generateOTPToken(otpCode);
-    console.log(otpCode,otpToken,authServices.checkOTPValid(otpCode,otpToken));
+    //console.log(otpCode,otpToken,authServices.checkOTPValid(otpCode,otpToken));
     const result = await authServices.sendMail(newEmail,otpCode);
-    console.log(result);
+    //console.log(result);
     const user = {
         user_accessotp : otpToken,
         user_status : STATUS_UPDATE,
@@ -67,23 +67,24 @@ router.post('/update-email',async(req,res)=>{
     }
     
     await userModel.updateEmail(accessTokenPayload.user_username,user);
-    res.status(201).json({status:"Update email success. Check your email to verify new Email"});
+    res.status(201).json({message:"Update email success. Check your email to verify new Email"});
 })
-router.post('/update-password',async(req,res)=>{
+router.patch('/update-password',async(req,res)=>{
     const {oldPassword, newPassword}= req.body;
     const {accessTokenPayload} = req;
     const user = await userModel.isExistByUsername(accessTokenPayload.user_username);
     if(user === null){
-        return res.status(200).json({status:"Some thing wrong, try again"});
+        return res.status(200).json({message:"Some thing wrong, try again"});
     }
     if(!bcrypt.compareSync(oldPassword,user.user_password)){
-        return res.status(200).json({status:"Old password wrong!"});
+        return res.status(200).json({message:"Old password wrong!"});
     }
-    console.log(newPassword);
+    //console.log(newPassword);
     const hashNewPassword = bcrypt.hashSync(newPassword,10);
-    console.log(hashNewPassword);
+    //console.log(hashNewPassword);
 
     await userModel.updatePassword(accessTokenPayload.user_username, hashNewPassword);
-    res.status(201).json({status:"Update password success."});
+    res.status(201).json({message:"Update password success."});
 })
+
 module.exports = router;
