@@ -34,4 +34,18 @@ router.post('/add-lecture',async (req,res)=>{
       };
     res.json(await adminModel.addLecture(lecture)).end();
 })
+router.get('/all-learner',async (req,res)=>{
+    res.json(await adminModel.allLearner()).end();
+})
+router.get('/all-lecture',async (req,res)=>{
+    res.json(await adminModel.allLecture()).end();
+})
+router.get('/all-courses',async (req,res)=>{
+    res.json(await adminModel.allCourses()).end();
+})
+/* router.get('/all-category',async (req,res)=>{
+    res.json(await adminModel.allCategory()).end();
+}) */
+
+
 module.exports = router;
