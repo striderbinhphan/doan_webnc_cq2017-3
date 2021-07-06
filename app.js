@@ -13,11 +13,23 @@ app.get('/',function(req,res){
   });
 })
 app.use('/uploads',express.static(path.resolve(__dirname, './uploads')));
+//work
 app.use('/auth',require('./routes/auth.route'));
-app.use('/user',userGuard,require('./routes/user.route'));
-app.use('/student',userGuard,require('./routes/student.route'));
+//work
+app.use('/courses',require('./routes/course.route'));
 
-app.use('/lecturer',lecturerGuard,require('./routes/lecturer.route'));
+app.use('/subcribers',require('./routes/coursesubscribe.route'));
+//work
+app.use('/sections',require('./routes/section.route'));
+//work
+app.use('/users',userGuard,require('./routes/user.route'));
+//work
+app.use('/videos',require('./routes/video.route'));
+//work
+app.use('/watchlists',require('./routes/watchlist.route'));
+
+
+
 
 app.use('/err',function(req,res){
   throw new Error('Error!');

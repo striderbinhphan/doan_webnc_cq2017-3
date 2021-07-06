@@ -89,7 +89,10 @@ router.post('/register',async(req,res)=>{
     delete user.user_password;
     delete user.user_accessotp;
     delete user.user_status;
-    res.status(201).json(user);
+    res.status(201).json({
+        message: "Please verify your account",
+        user: user
+    });
 })
 router.post('/lecturer-register',async(req,res)=>{
     const user = req.body;
