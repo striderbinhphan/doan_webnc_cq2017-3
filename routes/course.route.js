@@ -64,7 +64,8 @@ router.post('/',lecturerGuard,async (req,res)=>{
             saleoff: saleoff,
             section_count: sectionCount,
             course_status: false,
-            last_update: new Date()
+            last_update: new Date(),
+            created_date: new Date()
         };
         const courseAdded = await courseModel.addNewCourse(course);
         res.status(201).json({
