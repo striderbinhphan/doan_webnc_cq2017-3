@@ -24,7 +24,7 @@ module.exports = {
     },
     async getAllVideoBySectionId(sectionId){
         const list = await db('videos').where('section_id',sectionId);
-        if(list.length === null){
+        if(list.length === 0){
             return null
         }
         return list;

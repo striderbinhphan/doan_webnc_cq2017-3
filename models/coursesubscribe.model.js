@@ -7,5 +7,12 @@ module.exports = {
     },
     addMultiPurchasedCourse(purchasedCourseList){
         return db('course_subscribe').insert([...purchasedCourseList]);
+    },
+    async checkIsPurchasedCourse(userId,courseId){
+        const purchasedCourse = await db('course_subscribe').where('user_id',userId).andWhere('course_id',courseId);
+        if(purchasedCourse.length === 0){
+            return false;
+        }
+        return true;
     }
 }
