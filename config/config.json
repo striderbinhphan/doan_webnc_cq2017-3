@@ -1,3 +1,4 @@
 {
-    "PORT": 3001
+    "PORT": 3001,
+    "LIMIT_OF_PAGE":6
 }
