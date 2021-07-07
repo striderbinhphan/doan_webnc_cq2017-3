@@ -63,7 +63,7 @@ router.post('/',lecturerGuard,async (req,res)=>{
             price: price,
             saleoff: saleoff,
             section_count: sectionCount,
-            course_status: STATUS_NOTDONE,
+            course_status: false,
             last_update: new Date()
         };
         const courseAdded = await courseModel.addNewCourse(course);
@@ -74,6 +74,63 @@ router.post('/',lecturerGuard,async (req,res)=>{
     }
     catch(err){
         return res.json({message:err}).status(204);
+    }
+})
+router.patch('/:courseId',lecturerGuard,async (req,res)=>{
+    const courseId = req.params.courseId;
+    const {name, shortDescription, description,categoryId, price, saleoff, sectionCount, courseStatus} = req.body;
+    const {accessTokenPayload} = req;
+    const course = await courseModel.getCourseById(courseId);
+    if(course === null){
+        return res.status(400).json({message: "Course not found"});
+    }
+    if(course.user_id!==accessTokenPayload.user_id){
+        return res.status(401).json({message: "You do not have permission to modify this course"});
+    }
+    try{
+        let updatedCourse = {
+            course_name: name,
+            course_shortdescription: shortDescription,
+            course_description: description,
+            category_id:categoryId,
+            price: price,
+            saleoff: saleoff,
+            section_count: sectionCount,
+            course_status: courseStatus,
+            last_update: new Date()
+        };
+        const courseAdded = await courseModel.updateCourse(courseId,updatedCourse);
+        res.status(200).json({
+            message: "Update course successfully"
+        });
+    }
+    catch(err){
+        return res.status(400).json({message:err});
+    }
+})
+router.patch('/:courseId/status',lecturerGuard,async (req,res)=>{
+    const courseId = req.params.courseId;
+    const {courseStatus} = req.body;
+    const {accessTokenPayload} = req;
+    const course = await courseModel.getCourseById(courseId);
+    if(course === null){
+        return res.status(400).json({message: "Course not found"});
+    }
+    if(course.user_id!==accessTokenPayload.user_id){
+        return res.status(401).json({message: "You do not have permission to modify this course"});
+    }
+    try{
+        let updatedCourse = {
+            course_status: courseStatus,
+            last_update: new Date()
+        };
+        const courseAdded = await courseModel.updateCourse(courseId,updatedCourse);
+        res.status(200).json({
+            message: "Update status course successfully"
+        });
+    }
+    catch(err){
+        return res.status(400).json({message:err});
     }
 })
 const imageUpload = multer({storage: uploadFile('image')}).single('image');
