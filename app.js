@@ -6,11 +6,13 @@ const app = express();
 app.use(express.json());
 app.use(morgan("dev"));
 
+
 app.use("/course", require("./routes/course.route"));
 app.use("/user", require("./routes/user.route"));
 app.use("/category",require ("./routes/category.route"));
 
-console.log('tessssst');
+
+
 
 const PORT = config.PORT;
 app.listen(PORT, function () {

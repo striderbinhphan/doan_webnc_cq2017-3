@@ -1,42 +1,73 @@
 const express = require('express');
 const courseModel = require('../models/course.model');
 const router  = express.Router();
-router.get('/page/:page',async (req,res)=>{
-    const page = +req.params.page;
-    res.json(await courseModel.allCoursesForGuest(page)).end();
+router.get('/',async (req,res)=>{
+   const page = +req.query.page;
+   const courseList = await courseModel.allCoursesForGuest(page);
+   if(courseList.length === 0){
+       return res.status(204).end();
+   }
+    res.status(200).json((courseList)).end();
 })
-router.get('/:id',async (req,res)=>{
-    const course_id = +req.params.id;
-    res.json(await courseModel.getCourseById(course_id)).end();
+router.get('/category/web-courses',async (req,res)=>{
+   const page = +req.query.page;
+   const courseList = await courseModel.webCourses(page);
+   if(courseList.length === 0){
+       return res.status(204).end();
+   }
+    res.status(200).json((courseList)).end();
 })
 
-router.get('/:category_id/:page',async (req,res)=>{
-    const category_id= +req.params.category_id;
-    const page= +req.params.page;
-    res.json(await courseModel.getCourseByCategory(category_id,page)).end();
-})
-router.get('/web-courses',async (req,res)=>{
-    res.json(await courseModel.webCourses()).end();
-})
-router.get('/mobile-courses',async (req,res)=>{
-    res.json(await courseModel.mobileCourses()).end();
-})
+router.get('/category/mobile-courses',async (req,res)=>{
+    const page = +req.query.page;
+    const courseList = await courseModel.mobileCourses(page);
+    if(courseList.length === 0){
+        return res.status(204).end();
+    }
+     res.status(200).json((courseList)).end();
+ })
+ 
+
 router.get('/detail/:id',async (req,res)=>{
     const id = +req.params.id;
-    res.json(await courseModel.getCourseById(id)).end();
-})
-router.get('/:search/:page',async (req,res)=>{
-    const keyword = req.params.search;
-    const page = +req.params.page;
-    res.json(await courseModel.coursesSearch(keyword,page)).end();
+    const course = await courseModel.getCourseById(id);
+    if(course.length === 0){
+        return res.status(204).end();
+    }  
+    res.status(200).json(course[0]).end();
 })
 
-router.post('/delete',async (req,res)=>{
+router.delete('/delete',async (req,res)=>{
     const course_id= +req.body.course_id;
-    res.json(await courseModel.deleteCourse(course_id)).end();
+    res.status(200).json( await courseModel.deleteCourse(course_id)).end;
 })
+
 router.get('/feedback/:id',async (req,res)=>{
     const id= + req.params.id;
-    res.json(await courseModel.getFeedBack(id)).end();
+    const result = await courseModel.getFeedBack(id);
+    if(result.length === 0){
+        return res.status(204).end();
+    }  
+    res.status(200).json(result).end();
 })
+router.get('/query',async (req,res)=>{
+    const search = req.query.search;
+    const page = +req.query.page;
+    const result = await courseModel.coursesSearch(search,page);
+    if(result.length === 0){
+        return res.status(204).end();
+    }  
+    res.status(200).json(result).end();
+})
+
+router.get('/category',async (req,res)=>{
+    const category_id= +req.query.id;
+    const page= +req.query.page;
+    const result = await courseModel.getCourseByCategory(category_id,page);
+    if(result.length === 0){
+        return res.status(204).end();
+    }  
+    res.status(200).json(result).end();
+})
+
 module.exports = router;

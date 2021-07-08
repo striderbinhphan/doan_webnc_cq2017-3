@@ -1,10 +1,11 @@
 const express = require('express');
 const userModel = require('../models/user.model');
 const router  = express.Router();
-router.post('/delete-user',async (req,res)=>{
+ router.delete('/delete-user',async (req,res)=>{
     const user_id= +req.body.user_id;
     res.json(await userModel.deleteUser(user_id)).end();
 })
+
 router.post('/add-lecture',async (req,res)=>{
     const { user_name, user_firstname,user_lastname,user_password,user_email,user_dob,user_role,refresh_token} = req.body;
     const lecture = {
@@ -20,9 +21,19 @@ router.post('/add-lecture',async (req,res)=>{
     res.json(await userModel.addLecture(lecture)).end();
 })
 router.get('/all-learner',async (req,res)=>{
-    res.json(await userModel.allLearner()).end();
+    const page = +req.query.page;
+    const result = await userModel.allLearner(page);
+    if(result.length ===0){
+        return res.status(204).end();
+    }
+    res.status(200).json(result).end();
 })
 router.get('/all-lecture',async (req,res)=>{
-    res.json(await userModel.allLecture()).end();
+    const page = +req.query.page;
+    const result = await userModel.allLecture(page);
+    if(result.length ===0){
+        return res.status(204).end();
+    }
+    res.status(200).json(result).end();
 })
 module.exports = router;
