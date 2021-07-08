@@ -22,17 +22,17 @@ router.get('/',(req,res)=>{
 router.post('/login',async (req,res)=>{
     const user =await userModel.isExistByUsername(req.body.username);
     if(user === null){
-        return res.status(200).json({
+        return res.status(204).json({
             authenticated: false,
         })
     }
     if(user.user_status === STATUS_VERIFY){
-        return res.status(200).json({
+        return res.status(204).json({
             message: "Please verify your account! Try again",
         })
     }
     if(!bcrypt.compareSync(req.body.password,user.user_password)){
-        return  res.status(200).json({
+        return  res.status(204).json({
             authenticated: false,
         })
     }
@@ -62,13 +62,13 @@ router.post('/register',async(req,res)=>{
     //console.log(user);
     const isExistUsername =await userModel.isExistByUsername(req.body.user_username);
     if(isExistUsername !== null){
-        return res.status(200).json({
+        return res.status(204).json({
             message: "username is created! try another username",
         })
     }
     const isExistEmail =await userModel.isExistByEmail(req.body.user_email);
     if(isExistEmail !== null){
-        return res.status(200).json({
+        return res.status(204).json({
             message: "email is exist! try another email",
         })
     }
@@ -99,13 +99,13 @@ router.post('/lecturer-register',async(req,res)=>{
     //console.log(user);
     const isExistUsername =await userModel.isExistByUsername(req.body.user_username);
     if(isExistUsername !== null){
-        return res.status(200).json({
+        return res.status(204).json({
             message: "username is created! try another username",
         })
     }
     const isExistEmail =await userModel.isExistByEmail(req.body.user_email);
     if(isExistEmail !== null){
-        return res.status(200).json({
+        return res.status(204).json({
             message: "email is exist! try another email",
         })
     }
@@ -132,17 +132,17 @@ router.post('/verify',async(req,res)=>{
     const {user_email,user_otp} = req.body;
     const user = await userModel.isExistByEmail(user_email);
     if(user === null){
-        return res.status(200).json({
+        return res.status(204).json({
             message: "Email isn't exist in our services, pls register first",
         })
     }
     if(user.user_status !== STATUS_VERIFY && user.user_status !== STATUS_UPDATE){
-        return res.status(200).json({
+        return res.status(204).json({
             message: "Email was activated",
         })
     }
     if(!authServices.checkOTPValid(user_otp,user.user_accessotp)){
-        return res.status(200).json({message: "OTP expired/wrong, resend/check OTP again"});
+        return res.status(204).json({message: "OTP expired/wrong, resend/check OTP again"});
     }
     await userModel.updateUserStatus(user_email,STATUS_ACTIVE);
     res.status(201).json({message: `Verifying ${user_email} successfully`});
@@ -151,12 +151,12 @@ router.post('/resend',async(req,res)=>{
     const {user_email} = req.body;
     const user = await userModel.isExistByEmail(user_email);
     if(user === null){
-        return res.status(200).json({
+        return res.status(204).json({
             message: "Email isn't exist in our services, pls register first",
         })
     }
     if(user.user_status !== STATUS_VERIFY && user.user_status !== STATUS_UPDATE){
-        return res.status(200).json({
+        return res.status(204).json({
             message: "Email had been activated",
         })
     }

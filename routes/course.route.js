@@ -27,7 +27,7 @@ router.get('/',roleVerify,async(req,res)=>{
     const {accessTokenPayload} = req;
     const courseList = await courseModel.all();
     if(courseList === null){
-        return res.status(200).json({message: "Course empty"})
+        return res.status(204).json({message: "Course empty"})
     }
     const resCourseList = await  setCourse(accessTokenPayload.user_id,accessTokenPayload.user_role,courseList);
     res.status(200).json(resCourseList);
@@ -36,7 +36,7 @@ router.get('/me',lecturerGuard,async(req,res)=>{
     const {accessTokenPayload} = req;
     const courseList = await courseModel.getCourseByLecturerId(accessTokenPayload.user_id);
     if(courseList === null){
-        return res.status(200).json({message: "You hadn't been post any course before"})
+        return res.status(204).json({message: "You hadn't been post any course before"})
     }
     res.status(200).json(courseList);
 })
@@ -45,7 +45,7 @@ router.get('/:courseId',roleVerify,async(req,res)=>{
     const {accessTokenPayload} = req;
     const course =await courseModel.getCourseById(courseId);
     if(course === null){
-        return res.status(200).json({message: "Course id not found"});
+        return res.status(204).json({message: "Course id not found"});
     }
     const resCourse =await setCourse(accessTokenPayload.user_id,accessTokenPayload.user_role,[course]);
     res.status(200).json(resCourse[0]);

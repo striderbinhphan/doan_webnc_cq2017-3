@@ -37,7 +37,7 @@ router.patch('/update-info',async(req,res)=>{
     try{
         await userModel.updateUserInfo(accessTokenPayload.user_username,user)
         console.log(user);
-        res.status(200).json({
+        res.status(204).json({
             message: "update user info success",
         });
     }catch(err){
@@ -51,7 +51,7 @@ router.patch('/update-email',async(req,res)=>{
     const {accessTokenPayload} = req;
     const isExistUser = await userModel.isExistByEmail(newEmail);
     if(isExistUser !== null){
-        return res.status(200).json({message:"this email has been used! try another"});
+        return res.status(204).json({message:"this email has been used! try another"});
     }
     
 
@@ -74,10 +74,10 @@ router.patch('/update-password',async(req,res)=>{
     const {accessTokenPayload} = req;
     const user = await userModel.isExistByUsername(accessTokenPayload.user_username);
     if(user === null){
-        return res.status(200).json({message:"Some thing wrong, try again"});
+        return res.status(204).json({message:"Some thing wrong, try again"});
     }
     if(!bcrypt.compareSync(oldPassword,user.user_password)){
-        return res.status(200).json({message:"Old password wrong!"});
+        return res.status(204).json({message:"Old password wrong!"});
     }
     //console.log(newPassword);
     const hashNewPassword = bcrypt.hashSync(newPassword,10);

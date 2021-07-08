@@ -64,7 +64,7 @@ router.delete('/:sectionId',lecturerGuard,async(req,res)=>{
     try{
         
         await sectionModel.deleteSection(sectionId);
-        res.status(200).json({message: "Delete section successfully"});
+        res.status(204).json({message: "Delete section successfully"});
     }catch(err){
         return res.status(400).json({message:err});
     }
