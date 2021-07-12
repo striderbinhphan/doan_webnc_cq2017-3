@@ -64,21 +64,23 @@ module.exports = {
   getCourseOfLecture(lecture_id) {
     return db.select("course_name").from("course").where("user_id", lecture_id);
   },
-  /* get() {
-      console.log("vao toi day");
-      return (
-        db("course")
-          .join("review", "course.course_id", "=", "review.course_id")
-          .select("*")
-          .groupBy("course.course_id")
-          // .orderBy('name', 'desc')
-          .having("review.course_id", ">")
-      );
-    },
-    test() {
-      const kq = db("course").where({}).select("*");
-      console.log("ket qua la:");
-      console.log(kq);
-      return kq;
-    }, */
+  coursesSearchWithOutPaging(keyword) {
+    return db("course").where("course_name", "like", `%${keyword}%`);
+  },
+  getAvgPointByCourseID(course_id) {
+    return db("review")
+      .avg("review_rating as course_rv_point")
+      .where("course_id", course_id);
+  },
+  async searchAndSort(keyword) {
+    result = await this.coursesSearchWithOutPaging(keyword);
+    for (let i = 0; i < result.length; i++) {
+      let temp = await this.getAvgPointByCourseID(result[i].course_id);
+      result[i].course_rv_point = temp[0].course_rv_point;
+    }
+    result.sort(function (a, b) {
+      return b.course_rv_point - a.course_rv_point;
+    });
+    return result;
+  },
 };

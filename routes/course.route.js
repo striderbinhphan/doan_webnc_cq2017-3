@@ -69,5 +69,9 @@ router.get('/category',async (req,res)=>{
     }  
     res.status(200).json(result).end();
 })
-
+router.get('/search',async(req,res)=>{
+    const key = req.query.key;
+    const ret= await courseModel.searchAndSort(key);
+    res.status(200).json(ret).end();
+})
 module.exports = router;
