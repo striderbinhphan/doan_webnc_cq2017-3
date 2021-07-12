@@ -1,11 +1,14 @@
+
 const express = require('express');
 const morgan = require('morgan');
 require('dotenv').config();
+
 const app = express();
 require('express-async-errors') ;
 const path = require('path')
 const {userGuard, lecturerGuard} = require('./middlewares/auth.mdw')
 app.use(express.json());
+
 app.use(morgan('dev'));
 app.get('/',function(req,res){
   res.json({
@@ -28,6 +31,9 @@ app.use('/videos',require('./routes/video.route'));
 //work
 app.use('/watchlists',require('./routes/watchlist.route'));
 
+app.use("/course", require("./routes/course.route"));
+app.use("/user", require("./routes/user.route"));
+app.use("/category",require ("./routes/category.route"));
 
 
 
@@ -43,6 +49,7 @@ app.use((err,req,res,next)=>{
   console.error(err.stack)
   res.status(500).json({error_message:"something_broke"});
 })
+
 
 const PORT = process.env.PORT;
 app.listen(PORT, function () {
