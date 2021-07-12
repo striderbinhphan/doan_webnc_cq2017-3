@@ -1,6 +1,5 @@
 const db = require("../utils/db");
-const config = require("../config/config.json");
-const limit_of_page = config.LIMIT_OF_PAGE;
+const limit_of_page = process.env.LIMIT_OF_PAGE;
 
 module.exports = {
   deleteUser(user_id) {
