@@ -10,6 +10,7 @@ module.exports = {
         if(cList.length === 0){
             return null;
         }
+        console.log(cList[0]);
         return cList[0];
     },
     async getCourseByLecturerId(lecturerId){
@@ -64,10 +65,10 @@ module.exports = {
       .limit(limit_of_page)
       .offset((page - 1) * limit_of_page);
   },
-  getCourseById(id) {
-    const kq = db("course").where("course_id", id);
-    return kq;
-  },
+  // getCourseById(id) {
+  //   const kq = db("course").where("course_id", id);
+  //   return kq;
+  // },
   getCourseByCategory(category_id, page) {
     console.log("vao get course by id");
     return db("course")

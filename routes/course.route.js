@@ -16,14 +16,14 @@ const ROLE_STUDENT = process.env.ROLE_STUDENT || "student"
 const ROLE_LECTURER = process.env.ROLE_LECTURER || "lecturer"
 const ROLE_ADMIN = process.env.ROLE_ADMIN || "admin"
 
-router.get('/',async (req,res)=>{
-   const page = +req.query.page;
-   const courseList = await courseModel.allCoursesForGuest(page);
-   if(courseList.length === 0){
-       return res.status(204).end();
-   }
-    res.status(200).json((courseList)).end();
-})
+// router.get('/',async (req,res)=>{
+//    const page = +req.query.page;
+//    const courseList = await courseModel.allCoursesForGuest(page);
+//    if(courseList.length === 0){
+//        return res.status(204).end();
+//    }
+//     res.status(200).json((courseList)).end();
+// })
 router.get('/category/web-courses',async (req,res)=>{
    const page = +req.query.page;
    const courseList = await courseModel.webCourses(page);
@@ -115,11 +115,13 @@ router.get('/me',lecturerGuard,async(req,res)=>{
 })
 router.get('/:courseId',roleVerify,async(req,res)=>{ 
     const courseId =req.params.courseId;
+    //console.log(courseId);
     const {accessTokenPayload} = req;
     const course =await courseModel.getCourseById(courseId);
     if(course === null){
         return res.status(200).json({message: "Course id not found"});
     }
+    //console.log([course]);
     const resCourse =await setCourse(accessTokenPayload.user_id,accessTokenPayload.user_role,[course]);
     res.status(200).json(resCourse[0]);
 })
