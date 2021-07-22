@@ -23,19 +23,23 @@ router.post('/login',async (req,res)=>{
     const user =await userModel.isExistByUsername(req.body.username);
     if(user === null){
         return res.status(200).json({
-            authenticated: false,
-        })
-    }
-    if(user.user_status === STATUS_VERIFY){
-        return res.status(200).json({
-            message: "Please verify your account! Try again",
+            authenticated: "fail",
+            message: "Username not exist! Try again",
         })
     }
     if(!bcrypt.compareSync(req.body.password,user.user_password)){
         return  res.status(200).json({
-            authenticated: false,
+            authenticated: "fail",
+            message: "Wrong password! Try again"
         })
     }
+    if(user.user_status === STATUS_VERIFY){
+        return res.status(200).json({
+            authenticated: "verify",
+            message: "Please verify your account! Try again",
+        })
+    }
+    
     const payload = {
         user_id: user.user_id,
         user_username: user.user_username,
@@ -48,8 +52,8 @@ router.post('/login',async (req,res)=>{
     const accessToken = jwt.sign(payload,SECRET_KEY,opts);
     const refreshToken = randomString.generate(128);
     await userModel.addRFTokenToDB(user.user_id,refreshToken);
-    res.json({
-        authenticated: true,
+    res.status(200).json({
+        authenticated: "success",
         username: user.user_username,
         email: user.user_email,
         role: user.user_role,
