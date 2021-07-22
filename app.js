@@ -1,6 +1,7 @@
 
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors')
 require('dotenv').config();
 
 const app = express();
@@ -8,7 +9,7 @@ require('express-async-errors') ;
 const path = require('path')
 const {userGuard, lecturerGuard} = require('./middlewares/auth.mdw')
 app.use(express.json());
-
+app.use(cors())
 app.use(morgan('dev'));
 app.get('/',function(req,res){
   res.json({
