@@ -34,7 +34,7 @@ app.use('/watchlists',require('./routes/watchlist.route'));
 
 app.use("/category",require ("./routes/category.route"));
 
-
+app.use("/reviews", require("./routes/review.route"))
 
 app.use('/err',function(req,res){
   throw new Error('Error!');

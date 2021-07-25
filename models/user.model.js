@@ -25,6 +25,17 @@ module.exports = {
         return db('user').insert(user);
     },
     //kiem tra co ton tai user bang user name, tra ve user
+    async isExistByUserId(userId){
+        const ret = await db('user').where('user_id',userId);
+
+        if(ret.length === 0){
+            
+
+            return null;
+        }
+        return ret[0];
+    },
+    //kiem tra co ton tai user bang user name, tra ve user
     async isExistByUsername(username){
         const ret = await db('user').where('user_username',username);
 

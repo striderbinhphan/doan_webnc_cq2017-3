@@ -54,16 +54,13 @@ router.post('/login',async (req,res)=>{
     await userModel.addRFTokenToDB(user.user_id,refreshToken);
     res.status(200).json({
         authenticated: "success",
-        username: user.user_username,
-        email: user.user_email,
-        role: user.user_role,
         accessToken,
         refreshToken
     });
 })
 router.post('/register',async(req,res)=>{
     const user = req.body;
-    //console.log(user);
+    console.log(user);
     const isExistUsername =await userModel.isExistByUsername(req.body.user_username);
     if(isExistUsername !== null){
         return res.status(200).json({
@@ -133,11 +130,11 @@ router.post('/lecturer-register',async(req,res)=>{
     res.status(201).json(user);
 })
 router.post('/verify',async(req,res)=>{
-    const {user_email,user_otp} = req.body;
-    const user = await userModel.isExistByEmail(user_email);
+    const {user_username,user_otp} = req.body;
+    const user = await userModel.isExistByUsername(user_username);
     if(user === null){
         return res.status(200).json({
-            message: "Email isn't exist in our services, pls register first",
+            message: "User isn't exist in our services, pls register first",
         })
     }
     if(user.user_status !== STATUS_VERIFY && user.user_status !== STATUS_UPDATE){
@@ -148,15 +145,15 @@ router.post('/verify',async(req,res)=>{
     if(!authServices.checkOTPValid(user_otp,user.user_accessotp)){
         return res.status(200).json({message: "OTP expired/wrong, resend/check OTP again"});
     }
-    await userModel.updateUserStatus(user_email,STATUS_ACTIVE);
-    res.status(201).json({message: `Verifying ${user_email} successfully`});
+    await userModel.updateUserStatus(user.user_email,STATUS_ACTIVE);
+    res.status(201).json({message: `Verifying ${user.user_email} successfully`});
 })
 router.post('/resend',async(req,res)=>{
-    const {user_email} = req.body;
-    const user = await userModel.isExistByEmail(user_email);
+    const {user_username} = req.body;
+    const user = await userModel.isExistByUsername(user_username);
     if(user === null){
         return res.status(200).json({
-            message: "Email isn't exist in our services, pls register first",
+            message: "User isn't exist in our services, pls register first",
         })
     }
     if(user.user_status !== STATUS_VERIFY && user.user_status !== STATUS_UPDATE){
@@ -167,9 +164,9 @@ router.post('/resend',async(req,res)=>{
     const otpCode = authServices.generateOTPCode();
     const otpToken = authServices.generateOTPToken(otpCode);
     //console.log(otpCode,otpToken,authServices.checkOTPValid(otpCode,otpToken));
-    await userModel.addOTPTokenToDB(user_email,otpToken);
-    const result = await authServices.sendMail(req.body.user_email,otpCode);
-    res.status(200).json({message:"OTP 's sent to your email! Check"});
+    await userModel.addOTPTokenToDB(user.user_email,otpToken);
+    const result = await authServices.sendMail(user.user_email,otpCode);
+    res.status(201).json({message:"OTP 's sent to your email! Check"});
 })
 router.post('/refresh',async(req,res)=>{
     const {accessToken, refreshToken} = req.body;

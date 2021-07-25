@@ -3,6 +3,8 @@ const router = express.Router();
 const uploadFile = require('../services/fileupload.services')
 const courseModel = require('../models/course.model')
 const sectionModel = require('../models/section.model')
+const reviewModel = require('../models/review.model')
+const userModel = require("../models/user.model")
 const courseSubscribeModel  = require('../models/coursesubscribe.model')
 const multer = require('multer');
 const videoModel = require('../models/video.model');
@@ -119,7 +121,7 @@ router.get('/:courseId',roleVerify,async(req,res)=>{
     const {accessTokenPayload} = req;
     const course =await courseModel.getCourseById(courseId);
     if(course === null){
-        return res.status(200).json({message: "Course id not found"});
+        return res.status(204).json({message: "Course id not found"});
     }
     //console.log([course]);
     const resCourse =await setCourse(accessTokenPayload.user_id,accessTokenPayload.user_role,[course]);
@@ -308,6 +310,8 @@ async function setCourse(userId, role, courses){
 }
 async function getCourseDetail(course){
     const courseSections = await sectionModel.getAllSectionByCourseId(course.course_id);
+    let user = await userModel.isExistByUserId(course.user_id);
+    course.lecturer = user.user_name;
     //console.log(courseSections);
     if(courseSections !==null){
         for(let i=0;i<courseSections.length;i++){
@@ -317,6 +321,25 @@ async function getCourseDetail(course){
         }
     }
     course.sections = courseSections;
+
+    const reviews = await reviewModel.getCourseReviews(course.course_id);
+    if(reviews.length === 0) {
+        course.totalReview = 0;
+        course.averageRating = 5;
+        // course.reviews = [];
+        return course;
+    }
+    // for(let i = 0 ;i < reviews.length ; i++){
+    //     let user = await userModel.isExistByUserId(reviews[i].user_id);
+    //     reviews[i].userFullName = user.user_name;
+    // }
+    // course.reviews = reviews;
+
+
+    const averageRating = reviews.map((r)=>r.review_rating).reduce((a,b)=>a+b)/reviews.length;
+    
+    course.totalReview = reviews.length;
+    course.averageRating = averageRating;
     return course;
 }
 
