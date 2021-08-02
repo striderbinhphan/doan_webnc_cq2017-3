@@ -6,6 +6,7 @@ const sectionModel = require('../models/section.model')
 const reviewModel = require('../models/review.model')
 const userModel = require("../models/user.model")
 const courseSubscribeModel  = require('../models/coursesubscribe.model')
+const watchListModel  =require('../models/watchlist.model');
 const multer = require('multer');
 const videoModel = require('../models/video.model');
 const STATUS_DONE = process.env.STATUS_DONE || "done";
@@ -119,6 +120,7 @@ router.get('/:courseId',roleVerify,async(req,res)=>{
     const courseId =req.params.courseId;
     //console.log(courseId);
     const {accessTokenPayload} = req;
+    console.log(accessTokenPayload);
     const course =await courseModel.getCourseById(courseId);
     if(course === null){
         return res.status(204).json({message: "Course id not found"});
@@ -312,6 +314,8 @@ async function getCourseDetail(course){
     const courseSections = await sectionModel.getAllSectionByCourseId(course.course_id);
     let user = await userModel.isExistByUserId(course.user_id);
     course.lecturer = user.user_name;
+    course.totalWishList  = await watchListModel.getTotalWishList(course.course_id);
+    course.totalStudent  = await courseSubscribeModel.getTotalStudents(course.course_id);
     //console.log(courseSections);
     if(courseSections !==null){
         for(let i=0;i<courseSections.length;i++){
@@ -321,7 +325,7 @@ async function getCourseDetail(course){
         }
     }
     course.sections = courseSections;
-
+    
     const reviews = await reviewModel.getCourseReviews(course.course_id);
     if(reviews.length === 0) {
         course.totalReview = 0;

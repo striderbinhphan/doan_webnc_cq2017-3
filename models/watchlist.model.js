@@ -21,5 +21,9 @@ module.exports = {
     },
     deleteWatchList(user_id,course_id){
         return db('watch_list').where('user_id',user_id).andWhere('course_id',course_id).del();
+    },
+    async getTotalWishList(courseId){
+        const list = await db('watch_list').where('course_id',courseId);
+        return list.length;
     }
 }

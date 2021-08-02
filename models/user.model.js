@@ -95,6 +95,11 @@ module.exports = {
         return db('user').where('user_username',user_username).update({
             user_password: newPassword
         })
+    },
+    uploadProfileImage(user_username,profile_image){
+        return db('user').where('user_username',user_username).update({
+            user_image: profile_image
+        })
     }
 }
 
