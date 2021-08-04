@@ -131,12 +131,18 @@ router.get('/:courseId',roleVerify,async(req,res)=>{
 })
 router.post('/',lecturerGuard,async (req,res)=>{
     const {accessTokenPayload} = req;
-    const {name, shortDescription, description,categoryId, price, saleoff, sectionCount} = req.body;
+    const {courseName, shortDescription,categoryId, price, saleoff, sectionCount} = req.body;
+    // res.status(201).json({
+    //             message: "Create new Course successfully",
+    //             course: {
+    //                 courseName, shortDescription,categoryId, price, saleoff, sectionCount
+    //             },
+    //         });
     try{
         let course = {
-            course_name: name,
+            course_name: courseName,
             course_shortdescription: shortDescription,
-            course_description: description,
+            // course_description: description,
             category_id:categoryId,
             user_id:  accessTokenPayload.user_id,
             price: price,
@@ -146,9 +152,10 @@ router.post('/',lecturerGuard,async (req,res)=>{
             last_update: new Date()
         };
         const courseAdded = await courseModel.addNewCourse(course);
+        const cAddedRes = await courseModel.getCourseById(courseAdded[0]);
         res.status(201).json({
             message: "Create new Course successfully",
-            courseId: courseAdded[0]
+            newCourse: cAddedRes
         });
     }
     catch(err){
@@ -157,7 +164,7 @@ router.post('/',lecturerGuard,async (req,res)=>{
 })
 router.patch('/:courseId',lecturerGuard,async (req,res)=>{
     const courseId = req.params.courseId;
-    const {name, shortDescription, description,categoryId, price, saleoff, sectionCount, courseStatus} = req.body;
+    const {courseName, shortDescription,categoryId, price, saleoff, sectionCount, courseStatus} = req.body;
     const {accessTokenPayload} = req;
     const course = await courseModel.getCourseById(courseId);
     if(course === null){
@@ -168,9 +175,8 @@ router.patch('/:courseId',lecturerGuard,async (req,res)=>{
     }
     try{
         let updatedCourse = {
-            course_name: name,
+            course_name: courseName,
             course_shortdescription: shortDescription,
-            course_description: description,
             category_id:categoryId,
             price: price,
             saleoff: saleoff,
