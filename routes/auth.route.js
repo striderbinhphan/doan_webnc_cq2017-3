@@ -133,6 +133,36 @@ router.post("/lecturer-register", async (req, res) => {
   delete user.user_status;
   res.status(201).json(user);
 });
+router.post("/admin-register", async (req, res) => {
+  const user = req.body;
+  //console.log(user);
+  const isExistUsername = await userModel.isExistByUsername(
+    req.body.user_username
+  );
+  if (isExistUsername !== null) {
+    return res.status(200).json({
+      message: "username is created! try another username",
+    });
+  }
+  const isExistEmail = await userModel.isExistByEmail(req.body.user_email);
+  if (isExistEmail !== null) {
+    return res.status(200).json({
+      message: "email is exist! try another email",
+    });
+  }
+
+  user.user_status = STATUS_ACTIVE;
+  user.user_role = ROLE_ADMIN;
+
+  user.user_password = bcrypt.hashSync(user.user_password, 10);
+  const ret = await userModel.addNewUser(user);
+
+  user.user_id = ret[0];
+  delete user.user_password;
+  delete user.user_accessotp;
+  delete user.user_status;
+  res.status(201).json(user);
+});
 router.post("/verify", async (req, res) => {
   const { user_username, user_otp } = req.body;
   const user = await userModel.isExistByUsername(user_username);
