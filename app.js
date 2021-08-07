@@ -26,7 +26,7 @@ app.use('/subcribers',require('./routes/coursesubscribe.route'));
 //work
 app.use('/sections',require('./routes/section.route'));
 //work
-app.use('/users',userGuard,require('./routes/user.route'));
+app.use('/users',require('./routes/user.route'));
 //work
 app.use('/videos',require('./routes/video.route'));
 //work

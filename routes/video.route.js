@@ -17,21 +17,22 @@ course video api
 
 //create video first, return video id
 router.post('/',lecturerGuard,async (req,res)=>{
-    const {sectionId,videoTitle, videoPreviewStatus} = req.body;
+    const {sectionId,videoTitle} = req.body;
     
     if(sectionId === null || videoTitle === null){
         return res.status(200).json({message:"Video title must be not empty"});
     }
     const newVideo = {
         video_title: videoTitle,
-        preview_status: videoPreviewStatus,
+        preview_status: false,
         section_id: sectionId
     }
     try{
         const ret = await videoModel.addNewVideo(newVideo);
+        const video = await videoModel.getVideoByVideoId(ret[0]);
         res.status(201).json({
             message:"Upload video title successfully",
-            video_id: ret[0]
+            newVideo: video
         });
     }catch(err){
         return res.status(400).json({message:err});
@@ -68,7 +69,7 @@ router.patch('/:videoId/upload',lecturerGuard,uploadVideo,async (req,res)=>{
         DeleteVideoFile([videoFromDB.video_path]);
     }
     await videoModel.updateVideo(videoId,req.file.filename);
-    return res.status(200).json({message:"upload video successfully!"});
+    return res.status(200).json({message:"upload video successfully!",videoPath:req.file.filename});
 })
 
 

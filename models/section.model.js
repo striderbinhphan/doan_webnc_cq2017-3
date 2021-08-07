@@ -9,6 +9,16 @@ module.exports = {
         }
         return sections[0];
     },
+    
+    async getAllSectionByCourseIdLiteral(courseId){
+        console.log(courseId);
+        const sections = await db('sections').where("course_id", courseId);
+        if(sections.length === 0)
+        {
+            return [];
+        }
+        return sections;
+    },
     async getAllSectionByCourseId(courseId){
         console.log(courseId);
         const sections = await db('sections').where("course_id", courseId);

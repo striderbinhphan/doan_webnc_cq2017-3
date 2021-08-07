@@ -22,6 +22,13 @@ module.exports = {
             preview_status: updateVideoTitle.preview_status
         })
     },
+    async getAllVideoBySectionIdLiteral(sectionId){
+        const list = await db('videos').where('section_id',sectionId);
+        if(list.length === 0){
+            return [];
+        }
+        return list;
+    },
     async getAllVideoBySectionId(sectionId){
         const list = await db('videos').where('section_id',sectionId);
         if(list.length === 0){

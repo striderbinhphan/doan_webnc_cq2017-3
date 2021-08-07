@@ -273,7 +273,10 @@ router.patch(
     //console.log(course_id);
     const course_image = req.file.filename;
     await courseModel.uploadCourseImage(course_id, course_image);
-    res.status(201).json({ message: "Upload course image successfully" });
+    res.status(201).json({ 
+      message: "Upload course image successfully",
+      newImage: course_image 
+    });
   }
 );
 
@@ -366,23 +369,21 @@ async function setCourse(userId, role, courses) {
   return responseCourses;
 }
 async function getCourseDetail(course) {
-  const courseSections = await sectionModel.getAllSectionByCourseId(
+  const courseSections = await sectionModel.getAllSectionByCourseIdLiteral(
     course.course_id
   );
-  let user = await userModel.isExistByUserId(course.user_id);
-  course.lecturer = user.user_name;
   //console.log(courseSections);
   if (courseSections !== null) {
     for (let i = 0; i < courseSections.length; i++) {
       //get video from db
-      let videos = await videoModel.getAllVideoBySectionId(
+      let videos = await videoModel.getAllVideoBySectionIdLiteral(
         courseSections[i].section_id
       );
       courseSections[i].videos = videos;
     }
   }
   course.sections = courseSections;
-
+  course.totalStudent = await courseSubscribeModel.getTotalStudents(course.course_id);
   const reviews = await reviewModel.getCourseReviews(course.course_id);
   if (reviews.length === 0) {
     course.totalReview = 0;
