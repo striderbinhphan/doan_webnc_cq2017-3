@@ -1,5 +1,9 @@
 const db = require("../utils/db")
 module.exports  = {
+    getReviewByReviewId(reviewId)
+    {
+        return db("review").where("review_id",reviewId);
+    },
     getCourseReviews(courseId)
     {
         return db("review").where("course_id",courseId);

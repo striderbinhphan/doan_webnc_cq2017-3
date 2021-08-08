@@ -139,7 +139,7 @@ router.get("/me", lecturerGuard, async (req, res) => {
   if (courseList === null) {
     return res
       .status(200)
-      .json({ message: "You hadn't been post any course before" });
+      .json([]);
   }
   res.status(200).json(courseList);
 });
@@ -221,6 +221,34 @@ router.patch("/:courseId", lecturerGuard, async (req, res) => {
       saleoff: saleoff,
       section_count: sectionCount,
       course_status: courseStatus,
+      last_update: new Date(),
+    };
+    const courseAdded = await courseModel.updateCourse(courseId, updatedCourse);
+    res.status(200).json({
+      message: "Update course successfully",
+    });
+  } catch (err) {
+    return res.status(400).json({ message: err });
+  }
+});
+router.patch("/:courseId/description", lecturerGuard, async (req, res) => {
+  const courseId = req.params.courseId;
+  const {
+    description
+  } = req.body;
+  const { accessTokenPayload } = req;
+  const course = await courseModel.getCourseById(courseId);
+  if (course === null) {
+    return res.status(400).json({ message: "Course not found" });
+  }
+  if (course.user_id !== accessTokenPayload.user_id) {
+    return res
+      .status(401)
+      .json({ message: "You do not have permission to modify this course" });
+  }
+  try {
+    let updatedCourse = {
+      course_description: description,
       last_update: new Date(),
     };
     const courseAdded = await courseModel.updateCourse(courseId, updatedCourse);
@@ -402,7 +430,7 @@ async function getCourseDetail(course) {
     reviews.length;
 
   course.totalReview = reviews.length;
-  course.averageRating = averageRating;
+  course.averageRating = averageRating.toFixed(1);
   return course;
 }
 

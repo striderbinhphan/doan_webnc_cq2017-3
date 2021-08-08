@@ -9,25 +9,31 @@ router.get('/:courseId',async(req,res)=>{
     if(reviews.length === 0) {
         return res.status(204).json({message: "Course has no any reviews"});
     }
-    const averageRating = reviews.map((r)=>r.review_rating).reduce((a,b)=>a+b)/reviews.length;
     for(let i = 0 ;i < reviews.length ; i++){
         let user = await userModel.isExistByUserId(reviews[i].user_id);
         reviews[i].userFullName = user.user_name;
+        reviews[i].userImage  = user.user_image;
     }
-    console.log(averageRating);
-    console.log(reviews);
-    res.status(200).json({
-        averageRating: averageRating,
-        reviews: reviews
-    });
+    res.status(200).json(reviews);
 })
 router.post('/',userGuard,async (req,res)=>{
     const {accessTokenPayload} = req;
     const {feedback,rating,courseId} = req.body;
+    console.log({feedback,rating,courseId});
     const timestamp = new Date();
     try{
         const ret = await reviewModel.addNewReview(feedback,rating,accessTokenPayload.user_id,courseId,timestamp);
-        return res.status(200).json({message: "Sent feedback successfully"});   
+        const review = await reviewModel.getReviewByReviewId(ret[0]);
+        let user = await userModel.isExistByUserId(review[0].user_id);
+        const newReview = {
+            ...review[0],
+            userFullName: user.user_name,
+            userImage  : user.user_image
+        }
+        return res.status(200).json({
+            message: "Sent feedback successfully",
+            newReview: newReview
+        });   
     }catch(err){
         return res.json({message:err});
     }
