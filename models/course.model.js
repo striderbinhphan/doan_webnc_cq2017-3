@@ -1,5 +1,7 @@
 const db = require("../utils/db");
 const limit_of_page = process.env.LIMIT_OF_PAGE;
+const limit_of_newcourse = process.env.LIMIT_OF_NEWCOURSE;
+
 module.exports = {
   all() {
     return db("course");
@@ -114,5 +116,10 @@ module.exports = {
       return b.course_rv_point - a.course_rv_point;
     });
     return result;
+  },
+  getNewCourses() {
+    return db("course")
+      .orderBy("created_date", "desc")
+      .limit(limit_of_newcourse)
   },
 };

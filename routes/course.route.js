@@ -62,6 +62,14 @@ router.get("/detail/:id", async (req, res) => {
   res.status(200).json(course[0]).end();
 });
 
+router.get("/new-courses", async (req, res) => {
+  const course = await courseModel.getNewCourses();
+  if (course.length === 0) {
+    return res.status(204).end();
+  }
+  res.status(200).json(course).end();
+});
+
 router.delete("/delete", async (req, res) => {
   const course_id = +req.body.course_id;
   res.status(200).json(await courseModel.deleteCourse(course_id)).end;
@@ -83,7 +91,7 @@ router.get("/query", async (req, res) => {
     return res.status(204).end();
   }
   const all = await courseModel.coursesSearchAll(search);
-  const maxPage = Math.ceil(all?.length / limit_of_page);
+  const maxPage = Math.ceil(all.length / limit_of_page);
   res.status(200).json({ result, maxPage }).end();
 });
 
@@ -96,7 +104,7 @@ router.get("/category", async (req, res) => {
   if (result.length === 0) {
     return res.status(204).end();
   }
-  const maxPage = Math.ceil(all?.length / limit_of_page);
+  const maxPage = Math.ceil(all.length / limit_of_page);
   res.status(200).json({ result, maxPage }).end();
 });
 router.get("/search", async (req, res) => {
@@ -104,7 +112,7 @@ router.get("/search", async (req, res) => {
   const page = req.query.page || 1;
   const ret = await courseModel.searchAndSort(key, page);
   const all = await courseModel.coursesSearchAll(key);
-  const maxPage = Math.ceil(all?.length / limit_of_page);
+  const maxPage = Math.ceil(all.length / limit_of_page);
   res.status(200).json({ ret, maxPage }).end();
 });
 /*
