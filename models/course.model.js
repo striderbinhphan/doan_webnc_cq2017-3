@@ -1,6 +1,8 @@
 const db = require("../utils/db");
 const limit_of_page = process.env.LIMIT_OF_PAGE;
 const limit_of_newcourse = process.env.LIMIT_OF_NEWCOURSE;
+const limit_of_hotcourse = process.env.LIMIT_OF_HOTCOURSE;
+const limit_of_popularcourse = process.env.LIMIT_OF_POPULARCOURSE;
 
 module.exports = {
   all() {
@@ -122,4 +124,36 @@ module.exports = {
       .orderBy("created_date", "desc")
       .limit(limit_of_newcourse)
   },
+  async getHotCourses() {
+    let course = await this.all();
+    for (let i = 0; i < course.length; i++) {
+      let temp = await this.getAvgPointByCourseID(course[i].course_id);
+      course[i].course_rv_point = temp[0].course_rv_point;
+    }
+    course.sort(function (a, b) {
+      return b.course_rv_point - a.course_rv_point;
+    });
+    const ret = course.slice(0, limit_of_hotcourse)
+    return ret;
+  },
+  countSubcribeByCourseID(course_id) {
+    return db("course_subscribe")
+    .count('user_id',{as: 'Number_Of_Subcribe'})
+    .where("course_id", course_id);
+  },
+
+  async getPopularCourses() {
+    let course = await this.all();
+    for (let i = 0; i < course.length; i++) {
+      let temp = await this.countSubcribeByCourseID(course[i].course_id);
+      course[i].Number_Of_Subcribe = temp[0].Number_Of_Subcribe;
+    }
+    course.sort(function (a, b) {
+      return b.Number_Of_Subcribe - a.Number_Of_Subcribe;
+    });
+    const ret = course.slice(0, limit_of_popularcourse)
+    return ret;
+  },
 };
+
+

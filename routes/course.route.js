@@ -70,6 +70,21 @@ router.get("/new-courses", async (req, res) => {
   res.status(200).json(course).end();
 });
 
+router.get("/hot-courses", async (req, res) => {
+  const course = await courseModel.getHotCourses();
+  if (course.length === 0) {
+    return res.status(204).end();
+  }
+  res.status(200).json(course).end();
+});
+router.get("/popular-courses", async (req, res) => {
+  const course = await courseModel.getPopularCourses();
+  if (course.length === 0) {
+    return res.status(204).end();
+  }
+  res.status(200).json(course).end();
+});
+
 router.delete("/delete", async (req, res) => {
   const course_id = +req.body.course_id;
   res.status(200).json(await courseModel.deleteCourse(course_id)).end;
