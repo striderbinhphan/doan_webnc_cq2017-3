@@ -242,6 +242,8 @@ router.post("/", lecturerGuard, async (req, res) => {
       section_count: sectionCount,
       course_status: false,
       last_update: new Date(),
+      created_date: new Date(),
+
     };
     const courseAdded = await courseModel.addNewCourse(course);
     const cAdded = await courseModel.getCourseById(courseAdded[0]);
