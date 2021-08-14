@@ -128,7 +128,7 @@ module.exports = {
     let course = await this.all();
     for (let i = 0; i < course.length; i++) {
       let temp = await this.getAvgPointByCourseID(course[i].course_id);
-      course[i].course_rv_point = temp[0].course_rv_point;
+      course[i].course_rv_point = temp[0].course_rv_point?temp[0].course_rv_point:5;
     }
     course.sort(function (a, b) {
       return b.course_rv_point - a.course_rv_point;
