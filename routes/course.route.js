@@ -497,5 +497,10 @@ async function getCourseDetail(course) {
   course.averageRating = averageRating.toFixed(1);
   return course;
 }
-
+//chat bot api get courses by categoryid
+router.get("/category/:categoryId", async (req, res) => {
+  const categoryId = req.params.categoryId;
+  const courseList = await courseModel.getCoursesByCategoryId(categoryId);
+  res.status(200).json(courseList).end();
+});
 module.exports = router;

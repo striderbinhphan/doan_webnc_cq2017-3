@@ -154,6 +154,16 @@ module.exports = {
     const ret = course.slice(0, limit_of_popularcourse)
     return ret;
   },
+
+//chat bot api model
+  async getCoursesByCategoryId(categoryId){
+    const courses = await db("course").where("category_id", categoryId);
+    if (courses.length === 0) {
+      return [];
+    }
+    return courses;
+  }
+
 };
 
 
