@@ -47,7 +47,7 @@ router.post("/login", async (req, res) => {
     user_role: user.user_role,
   };
   const opts = {
-    expiresIn: 60 * 60,
+    expiresIn: 5 * 60,
   };
   const accessToken = jwt.sign(payload, SECRET_KEY, opts);
   const refreshToken = randomString.generate(128);
@@ -228,7 +228,7 @@ router.post("/refresh", async (req, res) => {
       user_role: decodedData.user_role,
     };
     const newAccessToken = jwt.sign(payload, SECRET_KEY, {
-      expiresIn: 60 * 60,
+      expiresIn: 5 * 60,
     });
     return res.json({
       accessToken: newAccessToken,

@@ -8,10 +8,11 @@ const {userGuard, lecturerGuard} = require('../middlewares/auth.mdw')
 router.get("/me",userGuard,async (req,res)=>{
     const {accessTokenPayload} = req;
     const csList = await courseSubscribeModel.getCourseSubcribeList(accessTokenPayload.user_id);
-    const courseIdList = csList.map(w=>w.course_id);
     let csListDetail = [];
-    for(let i = 0 ; i<courseIdList.length;i++){
-        const course = await courseModel.getCourseById(courseIdList[i]);
+    for(let i = 0 ; i<csList.length;i++){
+        const course = await courseModel.getCourseById(csList[i].course_id);
+        course.purchased_date = csList[i].purchased_date;
+        course.purchased_total = csList[i].purchased_total;
         csListDetail.push(course);
     }
     //reduceeeeeeeeeeee musted
