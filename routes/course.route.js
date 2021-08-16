@@ -142,7 +142,7 @@ router.get("/query", async (req, res) => {
   const page = +req.query.page;
   const result = await courseModel.coursesSearchByPage(search, page);
   if (result.length === 0) {
-    return res.status(204).end();
+    return res.status(200).json({ result:[], maxPage:1 }).end();
   }
   const all = await courseModel.coursesSearchAll(search);
   const maxPage = Math.ceil(all.length / limit_of_page);
