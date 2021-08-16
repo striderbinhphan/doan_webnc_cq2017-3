@@ -84,14 +84,14 @@ router.delete('/:videoId',lecturerGuard,async (req,res)=>{
 })
 
 //api chatbot
-router.get('/section/:sectionId',lecturerGuard,async (req,res)=>{
+router.get('/section/:sectionId',async (req,res)=>{
     const sectionId = req.params.sectionId;
     const videos = await videoModel.getAllVideoBySectionIdLiteral(sectionId);
     
     return res.status(200).json(videos);
 })
 
-router.get('/:videoId',lecturerGuard,async (req,res)=>{
+router.get('/:videoId',async (req,res)=>{
     const videoId = req.params.videoId;
     const videoFromDB = await videoModel.getVideoByVideoId(videoId);
     return res.status(200).json(videoFromDB);
