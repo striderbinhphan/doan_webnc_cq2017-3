@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/striderbinhphan/doan_webnc_cq2017-3#readme",
   "dependencies": {
+    "ajv": "^8.6.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",

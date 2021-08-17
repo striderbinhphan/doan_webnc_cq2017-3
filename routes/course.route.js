@@ -221,7 +221,8 @@ router.get("/:courseId", roleVerify, async (req, res) => {
   );
   res.status(200).json(resCourse[0]);
 });
-router.post("/", lecturerGuard, async (req, res) => {
+const courseSchema  = require('../schemas/course.schema.json')
+router.post("/", lecturerGuard,require('../middlewares/validate.mdw')(courseSchema), async (req, res) => {
   const { accessTokenPayload } = req;
   const {
     courseName,

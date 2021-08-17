@@ -16,7 +16,8 @@ router.get('/:courseId',async(req,res)=>{
     }
     res.status(200).json(reviews);
 })
-router.post('/',userGuard,async (req,res)=>{
+const reviewSchema = require('../schemas/register.schema.json')
+router.post('/',userGuard,require("../middlewares/validate.mdw")(reviewSchema),async (req,res)=>{
     const {accessTokenPayload} = req;
     const {feedback,rating,courseId} = req.body;
     console.log({feedback,rating,courseId});

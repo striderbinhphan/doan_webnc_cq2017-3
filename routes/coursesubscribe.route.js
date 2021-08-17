@@ -19,7 +19,8 @@ router.get("/me",userGuard,async (req,res)=>{
     res.status(201).json(csListDetail);
 })
 //buying courses
-router.post('/checkout',userGuard,async (req,res)=>{
+const checkoutSchema = require('../schemas/checkout.schema.json');
+router.post('/checkout',userGuard,require('../middlewares/validate.mdw')(checkoutSchema),async (req,res)=>{
     const {accessTokenPayload} = req;
     const {courseIdList}  =req.body;
     if(courseIdList.length === null){

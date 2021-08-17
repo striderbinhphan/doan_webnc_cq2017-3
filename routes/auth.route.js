@@ -19,7 +19,8 @@ const ROLE_ADMIN = process.env.ROLE_ADMIN || "admin";
 router.get("/", (req, res) => {
   res.json({ hello: "hello from auth services" });
 });
-router.post("/login", async (req, res) => {
+const loginSchema  = require('../schemas/login.schema.json')
+router.post("/login",require('../middlewares/validate.mdw')(loginSchema), async (req, res) => {
   const user = await userModel.isExistByUsername(req.body.username);
   if (user === null) {
     return res.status(200).json({
@@ -58,7 +59,8 @@ router.post("/login", async (req, res) => {
     refreshToken,
   });
 });
-router.post("/register", async (req, res) => {
+const registerSchema  = require('../schemas/register.schema.json')
+router.post("/register",require('../middlewares/validate.mdw')(registerSchema), async (req, res) => {
   const user = req.body;
   console.log(user);
   const isExistUsername = await userModel.isExistByUsername(
