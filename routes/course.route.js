@@ -61,6 +61,53 @@ router.get("/detail/:id", async (req, res) => {
   }
   res.status(200).json(course[0]).end();
 });
+router.get('/category/:categoryId', async (req, res) => {
+  const categoryId  = +req.params.categoryId
+  const course = await courseModel.getAllByCategory(categoryId);
+  if (course.length === 0) {
+    return res.json([]).end();
+  }
+  for(let i = 0 ;i < course.length ; i++){
+    let user = await userModel.isExistByUserId(course[i].user_id);
+    course[i].lecturerFullName = user.user_name;
+    course[i].lecturerImage  = user.user_image;
+    let reviews = await reviewModel.getCourseReviews(course[i].course_id)
+    course[i].totalReviews = reviews.length;
+    if(reviews.length!==0){
+      const averageRating =
+      reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
+      reviews.length;
+      course[i].course_rv_point = parseFloat(averageRating.toFixed(1));
+    }
+    else{
+      course[i].course_rv_point  =5;
+    }
+  }
+  res.status(200).json(course).end();
+});
+router.get('/mostviewest-courses', async (req, res) => {
+  const course = await courseModel.getMostViewestCourse();
+  if (course.length === 0) {
+    return res.status(204).end();
+  }
+  for(let i = 0 ;i < course.length ; i++){
+    let user = await userModel.isExistByUserId(course[i].user_id);
+    course[i].lecturerFullName = user.user_name;
+    course[i].lecturerImage  = user.user_image;
+    let reviews = await reviewModel.getCourseReviews(course[i].course_id)
+    course[i].totalReviews = reviews.length;
+    if(reviews.length!==0){
+      const averageRating =
+      reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
+      reviews.length;
+      course[i].course_rv_point = parseFloat(averageRating.toFixed(1));
+    }
+    else{
+      course[i].course_rv_point  =5;
+    }
+  }
+  res.status(200).json(course).end();
+});
 
 router.get("/new-courses", async (req, res) => {
   const course = await courseModel.getNewCourses();

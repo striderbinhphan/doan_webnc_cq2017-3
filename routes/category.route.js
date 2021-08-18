@@ -8,6 +8,21 @@ router.get("/all", async (req, res) => {
    }
     res.status(200).json((result)).end();
 });
+router.get('/topcate',async (req,res)=>{
+  const categories = await categoryModel.getTopCategoryByPurchased();
+ 
+  if(categories.length === 0){
+    return res.json([]);
+  }
+  const categoriesResult = categories.map(c=>({
+    categoryId:c.category_id,
+    categoryName:c.category_name,
+    categoryImage:c.category_image,
+    SLDK:c.SL,
+
+  }))
+  res.status(200).json(categoriesResult).end();
+})
 router.get("/", async (req, res) => {
   const page = +req.query.page;
   const result = await categoryModel.allCategory(page);

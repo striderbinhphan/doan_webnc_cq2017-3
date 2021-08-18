@@ -3,7 +3,6 @@ const limit_of_page = process.env.LIMIT_OF_PAGE;
 const limit_of_newcourse = process.env.LIMIT_OF_NEWCOURSE;
 const limit_of_hotcourse = process.env.LIMIT_OF_HOTCOURSE;
 const limit_of_popularcourse = process.env.LIMIT_OF_POPULARCOURSE;
-
 module.exports = {
   all() {
     return db("course");
@@ -170,6 +169,15 @@ module.exports = {
       return [];
     }
     return courses;
+  },
+  getMostViewestCourse(){
+    var date = new Date();
+    date.setDate(date.getDate() - 7);
+    return db("course")
+    .innerJoin('user_view_event','course.course_id','user_view_event.course_id')
+    .where('user_view_event.date',">",date)
+    .orderBy('user_view_event.viewcount','desc')
+    .limit(10)
   }
 
 };

@@ -16,4 +16,11 @@ module.exports = {
   addCategory(category) {
     return db("category").insert(category);
   },
+  getTopCategoryByPurchased(){
+    return db.select("*").count('* as SL').from("category")
+    .leftJoin('course','category.category_id',"=",'course.category_id')
+    .innerJoin('course_subscribe','course.course_id',"=",'course_subscribe.course_id')
+    .groupBy('course.category_id')
+    .orderBy('SL','desc');
+  }
 };
