@@ -139,10 +139,28 @@ router.get("/feedback/:id", async (req, res) => {
 });
 router.get("/query", async (req, res) => {
   const search = req.query.search;
+  const categoryId = req.query.categoryId;
   const page = +req.query.page;
-  const result = await courseModel.coursesSearchByPage(search, page);
+  const result = (categoryId==="default"||!categoryId)? await courseModel.coursesSearchByPage(search, page)
+  : await courseModel.coursesSearchByPageAndCate(search,page,parseInt(categoryId));
   if (result.length === 0) {
     return res.status(204).end();
+  }
+  for(let i = 0 ;i < result.length ; i++){
+    let user = await userModel.isExistByUserId(result[i].user_id);
+    result[i].lecturerFullName = user.user_name;
+    result[i].lecturerImage  = user.user_image;
+    let reviews = await reviewModel.getCourseReviews(result[i].course_id)
+    result[i].totalReviews = reviews.length;
+    if(reviews.length!==0){
+      const averageRating =
+      reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
+      reviews.length;
+      result[i].course_rv_point = parseFloat(averageRating.toFixed(1));
+    }
+    else{
+      result[i].course_rv_point  =5;
+    }
   }
   const all = await courseModel.coursesSearchAll(search);
   const maxPage = Math.ceil(all.length / limit_of_page);

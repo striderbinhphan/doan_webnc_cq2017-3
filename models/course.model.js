@@ -83,6 +83,14 @@ module.exports = {
       .limit(limit_of_page)
       .offset((page - 1) * limit_of_page);
   },
+  coursesSearchByPageAndCate(keyword, page,categoryId) {
+    return db("course")
+      .where("course_name", "like", `%${keyword}%`)
+      .andWhere("category_id",categoryId)
+      .orderBy("last_update", "asc")
+      .limit(limit_of_page)
+      .offset((page - 1) * limit_of_page);
+  },
   coursesSearchAll(keyword) {
     return db("course")
       .where("course_name", "like", `%${keyword}%`)
