@@ -62,18 +62,6 @@ router.delete('/:sectionId',lecturerGuard,async(req,res)=>{
         //get video path if not null to delete
         const videoPaths = videos.filter(v=>(v.video_path !== null));
 
-
-    if(videoPaths.length!==0){
-        
-        DeleteVideoFile(videoPaths);
-    }
-    try{
-        
-        await sectionModel.deleteSection(sectionId);
-        res.status(204).json({message: "Delete section successfully"});
-    }catch(err){
-        return res.status(400).json({message:err});
-
         if(videoPaths.length!==0){
             const videoPathAll = videoPaths.map(v=>v.video_path)
             DeleteVideoFile(videoPathAll);
@@ -85,7 +73,6 @@ router.delete('/:sectionId',lecturerGuard,async(req,res)=>{
         }catch(err){
             return res.status(400).json({message:err});
         }
-
     }
     await sectionModel.deleteSection(sectionId);
     res.status(200).json({message: "Delete section successfully"});

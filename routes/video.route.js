@@ -20,7 +20,7 @@ router.post('/',lecturerGuard,async (req,res)=>{
     const {sectionId,videoTitle} = req.body;
     
     if(sectionId === null || videoTitle === null){
-        return res.status(204).json({message:"Video title must be not empty"});
+        return res.status(200).json({message:"Video title must be not empty"});
     }
     const newVideo = {
         video_title: videoTitle,
@@ -45,7 +45,7 @@ router.patch('/:videoId',lecturerGuard,async (req,res)=>{
     const {videoTitle,videoPreviewStatus} = req.body;
     
     if( videoTitle === null){
-        return res.status(204).json({message:"Video title must be not empty"});
+        return res.status(200).json({message:"Video title must be not empty"});
     }
     const updateVideoTitle = {
         video_title: videoTitle,

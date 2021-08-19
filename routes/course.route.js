@@ -53,70 +53,6 @@ router.get("/category/mobile-courses", async (req, res) => {
   res.status(200).json(courseList).end();
 });
 
-
-*/
-router.get('/',roleVerify,async(req,res)=>{ 
-    const {accessTokenPayload} = req;
-    const courseList = await courseModel.all();
-    if(courseList === null){
-        return res.status(204).json({message: "Course empty"})
-    }
-    const resCourseList = await  setCourse(accessTokenPayload.user_id,accessTokenPayload.user_role,courseList);
-    res.status(200).json(resCourseList);
-})
-router.get('/me',lecturerGuard,async(req,res)=>{ 
-    const {accessTokenPayload} = req;
-    const courseList = await courseModel.getCourseByLecturerId(accessTokenPayload.user_id);
-    if(courseList === null){
-        return res.status(204).json({message: "You hadn't been post any course before"})
-    }
-    res.status(200).json(courseList);
-})
-router.get('/:courseId',roleVerify,async(req,res)=>{ 
-    const courseId =req.params.courseId;
-    const {accessTokenPayload} = req;
-    const course =await courseModel.getCourseById(courseId);
-    if(course === null){
-        return res.status(204).json({message: "Course id not found"});
-    }
-    const resCourse =await setCourse(accessTokenPayload.user_id,accessTokenPayload.user_role,[course]);
-    res.status(200).json(resCourse[0]);
-})
-router.post('/',lecturerGuard,async (req,res)=>{
-    const {accessTokenPayload} = req;
-    const {name, shortDescription, description,categoryId, price, saleoff, sectionCount} = req.body;
-    try{
-        let course = {
-            course_name: name,
-            course_shortdescription: shortDescription,
-            course_description: description,
-            category_id:categoryId,
-            user_id:  accessTokenPayload.user_id,
-            price: price,
-            saleoff: saleoff,
-            section_count: sectionCount,
-            course_status: false,
-            last_update: new Date(),
-            created_date: new Date()
-        };
-        const courseAdded = await courseModel.addNewCourse(course);
-        res.status(201).json({
-            message: "Create new Course successfully",
-            courseId: courseAdded[0]
-        });
-    }
-    catch(err){
-        return res.json({message:err}).status(204);
-    }
-})
-router.patch('/:courseId',lecturerGuard,async (req,res)=>{
-    const courseId = req.params.courseId;
-    const {name, shortDescription, description,categoryId, price, saleoff, sectionCount, courseStatus} = req.body;
-    const {accessTokenPayload} = req;
-    const course = await courseModel.getCourseById(courseId);
-    if(course === null){
-        return res.status(400).json({message: "Course not found"});
-
 router.get("/detail/:id", async (req, res) => {
   const id = +req.params.id;
   const course = await courseModel.getCourseById(id);
@@ -165,7 +101,6 @@ router.get('/mostviewest-courses', async (req, res) => {
       reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
       reviews.length;
       course[i].course_rv_point = parseFloat(averageRating.toFixed(1));
-
     }
     else{
       course[i].course_rv_point  =5;
