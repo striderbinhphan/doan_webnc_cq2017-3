@@ -70,35 +70,8 @@ router.post("/register",require('../middlewares/validate.mdw')(registerSchema), 
     return res.status(200).json({
       message: "username is created! try another username",
     });
-  }
-  const isExistEmail = await userModel.isExistByEmail(req.body.user_email);
-  if (isExistEmail !== null) {
-    return res.status(200).json({
-      message: "email is exist! try another email",
-    });
-  }
 
-  user.user_status = STATUS_VERIFY;
-  user.user_role = ROLE_STUDENT;
-
-  const otpCode = authServices.generateOTPCode();
-  const otpToken = authServices.generateOTPToken(otpCode);
-  //console.log(otpCode,otpToken,authServices.checkOTPValid(otpCode,otpToken));
-  const result = await authServices.sendMail(req.body.user_email, otpCode);
-  //console.log(result);
-  user.user_accessotp = otpToken;
-  user.user_password = bcrypt.hashSync(user.user_password, 10);
-  const ret = await userModel.addNewUser(user);
-
-  user.user_id = ret[0];
-  delete user.user_password;
-  delete user.user_accessotp;
-  delete user.user_status;
-  res.status(201).json({
-    message: "Please verify your account",
-    user: user,
-  });
-});
+})
 router.post("/lecturer-register", async (req, res) => {
   const user = req.body;
   //console.log(user);
@@ -108,6 +81,7 @@ router.post("/lecturer-register", async (req, res) => {
   if (isExistUsername !== null) {
     return res.status(200).json({
       message: "username is created! try another username",
+
     });
   }
   const isExistEmail = await userModel.isExistByEmail(req.body.user_email);
