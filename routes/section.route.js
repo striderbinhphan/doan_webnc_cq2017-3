@@ -20,9 +20,13 @@ router.post('/',lecturerGuard,async (req,res)=>{
     }
     try{
         const ret = await sectionModel.addNewSections(newSection);
+        const retSection = await sectionModel.getSectionBySectionId(ret[0]);
         res.status(201).json({
             message:"Upload sections successfully",
-            sectionId: ret[0]
+            newSection: {
+                ...retSection,
+                videos: []
+            },
         });
     }catch(err){
         return res.status(400).json({message:err});
@@ -54,8 +58,10 @@ router.delete('/:sectionId',lecturerGuard,async(req,res)=>{
     }
     //get video from db
     const videos = await videoModel.getAllVideoBySectionId(sectionId);
-    //get video path if not null to delete
-    const videoPaths = videos.map(v=>v.video_path).filter(v=>(v.video_path !== null));
+    if(videos!==null){
+        //get video path if not null to delete
+        const videoPaths = videos.filter(v=>(v.video_path !== null));
+
 
     if(videoPaths.length!==0){
         
@@ -67,7 +73,23 @@ router.delete('/:sectionId',lecturerGuard,async(req,res)=>{
         res.status(204).json({message: "Delete section successfully"});
     }catch(err){
         return res.status(400).json({message:err});
+
+        if(videoPaths.length!==0){
+            const videoPathAll = videoPaths.map(v=>v.video_path)
+            DeleteVideoFile(videoPathAll);
+        }
+        try{
+            
+            await sectionModel.deleteSection(sectionId);
+            return res.status(200).json({message: "Delete section successfully"});
+        }catch(err){
+            return res.status(400).json({message:err});
+        }
+
     }
+    await sectionModel.deleteSection(sectionId);
+    res.status(200).json({message: "Delete section successfully"});
+    
 })
 
 module.exports = router;

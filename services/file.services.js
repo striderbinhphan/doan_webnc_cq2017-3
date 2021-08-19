@@ -1,5 +1,12 @@
 const fs = require('fs')
 const path = require('path')
+module.exports.DeleteProfileImageFile=(imageFileNameList)=>{
+    imageFileNameList.forEach(fn => {
+        const oldImagePath = path.join(path.resolve(__dirname,'..'), '/uploads/profile/', fn) ;
+        fs.unlinkSync(oldImagePath);
+        console.log("deleted old image");
+    });
+}
 module.exports.DeleteImageFile=(imageFileNameList)=>{
     imageFileNameList.forEach(fn => {
         const oldImagePath = path.join(path.resolve(__dirname,'..'), '/uploads/images/', fn) ;

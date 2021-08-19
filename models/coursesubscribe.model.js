@@ -14,5 +14,9 @@ module.exports = {
             return false;
         }
         return true;
+    },
+    async getTotalStudents(courseId){
+        const list = await db('course_subscribe').where('course_id',courseId);
+        return list.length;
     }
 }
