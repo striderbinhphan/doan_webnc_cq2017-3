@@ -58,7 +58,7 @@ module.exports = {
              );
       },
       unDisableUser(userId) {
-        return db("user").where("user_id", userId).update({ user_isdisable: 0 });
+        return db("user").where("user_id", userId).update({ user_isdisable: 0,user_status:"active" });
       },
     //kiem tra co ton tai user bang user name, tra ve user
     async isExistByUserId(userId){

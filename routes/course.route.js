@@ -92,6 +92,7 @@ router.get('/category/:categoryId', async (req, res) => {
 });
 router.get('/mostviewest-courses', async (req, res) => {
   const course = await courseModel.getMostViewestCourse();
+  console.log(course);
   if (course.length === 0) {
     return res.status(204).end();
   }
@@ -296,6 +297,7 @@ router.get("/:courseId", roleVerify, async (req, res) => {
   if (course === null) {
     return res.status(204).json({ message: "Course id not found" });
   }
+  await courseModel.addViewEvent(courseId);
   //console.log([course]);
   const resCourse = await setCourse(
     accessTokenPayload.user_id,

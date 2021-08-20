@@ -61,7 +61,7 @@ const socketIo = require("socket.io")(server, {
   }
 }); 
 server.listen(3030, () => {
-  console.log('Socket Server đang chay tren cong 3000');
+  console.log('Socket Server đang chay tren cong 3030');
 })
 // nhớ thêm cái cors này để tránh bị Exception nhé :D  ở đây mình làm nhanh nên cho phép tất cả các trang đều cors được. 
 
