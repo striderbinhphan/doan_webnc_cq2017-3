@@ -41,9 +41,11 @@ module.exports = {
     return db("course").where("course_id", courseId).update(course);
   },
   allCoursesForGuest(page) {
-    return db("course")
-      .limit(limit_of_page)
-      .offset((page - 1) * limit_of_page).where("course_isdisable",0);
+    return db("course").where("course_isdisable",0)
+    .innerJoin('user','user.user_id','course.user_id')
+    .innerJoin('category','category.category_id','course.category_id');
+    // .limit(limit_of_page)
+    // .offset((page - 1) * limit_of_page);
   },
   getAllByCategory(category_id) {
     return db("course").where("category_id", category_id).where("course_isdisable",0);

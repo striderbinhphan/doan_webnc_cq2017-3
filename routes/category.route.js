@@ -1,12 +1,17 @@
 const express = require("express");
 const categoryModel = require("../models/category.model");
+const courseModel = require("../models/course.model");
 const router = express.Router();
 router.get("/all", async (req, res) => {
   const result = await categoryModel.all();
    if(result.length === 0){
        return res.status(204).end();
    }
-    res.status(200).json((result)).end();
+  for(let i = 0 ;i < result.length ; i++){
+    let numberOfCourse = await courseModel.getNumberCourseOfCategory(result[i].category_id);
+    result[i].number_course = numberOfCourse[0].NumberOfCourse;
+  }
+  res.status(200).json((result)).end();
 });
 router.get('/topcate',async (req,res)=>{
   const categories = await categoryModel.getTopCategoryByPurchased();
