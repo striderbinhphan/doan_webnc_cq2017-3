@@ -23,6 +23,22 @@ router.get('/topcate',async (req,res)=>{
   }))
   res.status(200).json(categoriesResult).end();
 })
+router.patch("/:categoryId", async (req, res) => {
+  const {categoryName} = req.body;
+  const categoryId = req.params.categoryId
+  
+  try {
+    await categoryModel.editCategory(categoryId,categoryName);
+    res.status(200).json({
+      message: "Edit success",
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({
+      message: err,
+    });
+  }
+});
 router.get("/", async (req, res) => {
   const page = +req.query.page;
   const result = await categoryModel.allCategory(page);
@@ -31,6 +47,12 @@ router.get("/", async (req, res) => {
    }
     res.status(200).json((result)).end();
 });
+router.delete("/delete", async (req, res) => {
+  const category_id = +req.body.category_id;
+  console.log('vao route delete category');
+  res.status(200).json(await categoryModel.delete(category_id)).end;
+});
+
 router.get("/:id", async (req, res) => {
   const id = +req.params.id;
   const result = await categoryModel.getCategoryById(id);

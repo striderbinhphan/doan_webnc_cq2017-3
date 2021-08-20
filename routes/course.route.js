@@ -61,6 +61,11 @@ router.get("/detail/:id", async (req, res) => {
   }
   res.status(200).json(course[0]).end();
 });
+router.get("/total/category/:catId", async (req, res) => {
+  const catId = +req.params.catId;
+  const count = await courseModel.getNumberCourseOfCategory(catId);
+  res.status(200).json(count[0]).end();
+});
 router.get('/category/:categoryId', async (req, res) => {
   const categoryId  = +req.params.categoryId
   const course = await courseModel.getAllByCategory(categoryId);
@@ -174,6 +179,19 @@ router.get("/popular-courses", async (req, res) => {
 router.delete("/delete", async (req, res) => {
   const course_id = +req.body.course_id;
   res.status(200).json(await courseModel.deleteCourse(course_id)).end;
+});
+router.patch("/disable", async (req, res) => {
+  const course_id = req.body.course_id;
+  try {
+    await courseModel.disableCourse(course_id)
+    res.status(200).json({
+      message: "Disable success",
+    });
+  } catch (err) {
+    return res.status(400).json({
+      message: err,
+    });
+  }
 });
 
 router.get("/feedback/:id", async (req, res) => {

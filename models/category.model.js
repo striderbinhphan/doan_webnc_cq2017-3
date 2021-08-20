@@ -16,6 +16,15 @@ module.exports = {
   addCategory(category) {
     return db("category").insert(category);
   },
+  editCategory(categoryId,categoryName) {
+  return db("category").where("category_id", categoryId).update({
+      category_name: categoryName,
+    });
+  },
+  delete(category_id) {
+    return db("category").where("category_id", category_id).del();
+  },
+
   getTopCategoryByPurchased(){
     return db.select("*").count('* as SL').from("category")
     .leftJoin('course','category.category_id',"=",'course.category_id')

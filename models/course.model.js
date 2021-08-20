@@ -33,6 +33,9 @@ module.exports = {
   delete(courseId) {
     return db("course").where("course_id", courseId).del();
   },
+  disableCourse(course_id){
+    return db('course').where("course_id",course_id).update({course_isdisable:1})
+},
   updateCourse(courseId, course) {
     return db("course").where("course_id", courseId).update(course);
   },
@@ -43,6 +46,9 @@ module.exports = {
   },
   getAllByCategory(category_id) {
     return db("course").where("category_id", category_id);
+  },
+  getNumberCourseOfCategory(category_id) {
+    return db("course").count("course_id",{as:'NumberOfCourse'}).where("category_id", category_id);
   },
   allCoursesForAdmin() {
     return db

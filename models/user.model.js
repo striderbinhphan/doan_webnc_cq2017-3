@@ -9,14 +9,39 @@ module.exports = {
     return db("user").insert(lecture);
   },
   allLearner(page) {
-    return  db.select('user_id','user_name','user_email','user_dob').from('user').where('user_role','learner')
+    return  db.select('user_id', "user_username",'user_name','user_email','user_dob')
+    .from('user')
+    .where('user_role','learner')
+    .where("user_isdisable", 0)
     .limit(limit_of_page)
     .offset((page - 1) * limit_of_page);
   },
   allLecture(page) {
-    return  db.select('user_id','user_name','user_email','user_dob').from('user').where('user_role','lecture')
-    .limit(limit_of_page)
-    .offset((page - 1) * limit_of_page);
+    return db
+      .select("user_id", "user_username", "user_name", "user_email", "user_dob")
+      .from("user")
+      .where("user_role", "lecturer")
+      .where("user_isdisable", 0)
+      .limit(limit_of_page)
+      .offset((page - 1) * limit_of_page);
+  },
+  allDisableLecture(page) {
+    return db
+      .select("user_id", "user_username", "user_name", "user_email", "user_dob")
+      .from("user")
+      .where("user_role", "lecturer")
+      .where("user_isdisable", 1)
+      .limit(limit_of_page)
+      .offset((page - 1) * limit_of_page);
+  },
+  allDisableLearner(page) {
+    return db
+      .select("user_id", "user_username", "user_name", "user_email", "user_dob")
+      .from("user")
+      .where("user_role", "learner")
+      .where("user_isdisable", 1)
+      .limit(limit_of_page)
+      .offset((page - 1) * limit_of_page);
   },
     all(){
         return db('user');
@@ -24,6 +49,17 @@ module.exports = {
     addNewUser(user){
         return db('user').insert(user);
     },
+    disableUser(userId) {
+        return db("user").where("user_id", userId).update(
+            { 
+                user_isdisable: 1,
+                user_status:"disabled"
+             }
+             );
+      },
+      unDisableUser(userId) {
+        return db("user").where("user_id", userId).update({ user_isdisable: 0 });
+      },
     //kiem tra co ton tai user bang user name, tra ve user
     async isExistByUserId(userId){
         const ret = await db('user').where('user_id',userId);

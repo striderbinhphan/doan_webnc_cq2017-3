@@ -59,6 +59,45 @@ router.post("/login",require('../middlewares/validate.mdw')(loginSchema), async 
     refreshToken,
   });
 });
+router.post("/admin/login",require('../middlewares/validate.mdw')(loginSchema), async (req, res) => {
+  const user = await userModel.isExistByUsername(req.body.username);
+  if (user === null) {
+    return res.status(200).json({
+      authenticated: "fail",
+      message: "Username not exist! Try again",
+    });
+  }
+  if (!bcrypt.compareSync(req.body.password, user.user_password)) {
+    return res.status(200).json({
+      authenticated: "fail",
+      message: "Wrong password! Try again",
+    });
+  }
+  if (user.user_role !== ROLE_ADMIN) {
+    return res.status(200).json({
+      authenticated: "fail",
+      message: "Your account is not admin account",
+    });
+  }
+
+  const payload = {
+    user_id: user.user_id,
+    user_username: user.user_username,
+    user_email: user.user_email,
+    user_role: user.user_role,
+  };
+  const opts = {
+    expiresIn: 5 * 60,
+  };
+  const accessToken = jwt.sign(payload, SECRET_KEY, opts);
+  const refreshToken = randomString.generate(128);
+  await userModel.addRFTokenToDB(user.user_id, refreshToken);
+  res.status(200).json({
+    authenticated: "success",
+    accessToken,
+    refreshToken,
+  });
+});
 const registerSchema  = require('../schemas/register.schema.json')
 router.post("/register",require('../middlewares/validate.mdw')(registerSchema), async (req, res) => {
   const user = req.body;
