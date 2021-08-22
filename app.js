@@ -3,8 +3,12 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors')
 require('dotenv').config();
-
 const app = express();
+const http = require("http");
+let server = http.createServer(app);
+
+const socketIOPORT = process.env.socketIOPORT||5000;
+const httpServerPORT = process.env.serverPORT||3001;
 
 
 require('express-async-errors') ;
@@ -53,15 +57,15 @@ app.use((err,req,res,next)=>{
   res.status(500).json({error_message:"something_broke"});
 })
 
-const http = require("http");
-const server = http.createServer(app);
+
+
 const socketIo = require("socket.io")(server, {
   cors: {
       origin: "*",
   }
 }); 
 
-// nhớ thêm cái cors này để tránh bị Exception nhé :D  ở đây mình làm nhanh nên cho phép tất cả các trang đều cors được. 
+
 
 
 socketIo.on("connection", (socket) => { ///Handle khi có connect từ client tới
@@ -77,12 +81,10 @@ socket.on("disconnect", () => {
 });
 });
 
-const socketIOPORT = process.env.socketIOPORT||5000;
 
 server.listen(socketIOPORT, () => {
   console.log(`Socket Server đang chay tren cong ${socketIOPORT}`);
 })
-const serverPORT = process.env.serverPORT||3001;
-app.listen(serverPORT, function () {
-  console.log(`Server is running at http://localhost:${serverPORT}`);
+app.listen(httpServerPORT, function () {
+  console.log(`Server is running at http://localhost:${httpServerPORT}`);
 });
