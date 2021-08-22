@@ -5,10 +5,9 @@ const cors = require('cors')
 require('dotenv').config();
 const app = express();
 const http = require("http");
-let server = http.createServer(app);
 
 const socketIOPORT = process.env.socketIOPORT||5000;
-const httpServerPORT = process.env.serverPORT||3001;
+const httpServerPORT = process.env.serverPORT|3001;
 
 
 require('express-async-errors') ;
@@ -59,32 +58,32 @@ app.use((err,req,res,next)=>{
 
 
 
+
+
+let server = http.createServer(app);
 const socketIo = require("socket.io")(server, {
   cors: {
       origin: "*",
   }
 }); 
 
-
-
-
 socketIo.on("connection", (socket) => { ///Handle khi có connect từ client tới
-console.log("New client connected" + socket.id); 
+  console.log("New client connected" + socket.id); 
 
-socket.on("sendDataClient", function(data) { // Handle khi có sự kiện tên là sendDataClient từ phía client
-  console.log(data);
-  socketIo.emit("sendDataServer", { data });// phát sự kiện  có tên sendDataServer cùng với dữ liệu tin nhắn từ phía server
-})
+  socket.on("sendDataClient", function(data) { // Handle khi có sự kiện tên là sendDataClient từ phía client
+    console.log(data);
+    socketIo.emit("sendDataServer", { data });// phát sự kiện  có tên sendDataServer cùng với dữ liệu tin nhắn từ phía server
+  })
 
-socket.on("disconnect", () => {
-  console.log("Client disconnected"); // Khi client disconnect thì log ra terminal.
+  socket.on("disconnect", () => {
+    console.log("Client disconnected"); // Khi client disconnect thì log ra terminal.
+  });
 });
-});
-
 
 server.listen(socketIOPORT, () => {
   console.log(`Socket Server đang chay tren cong ${socketIOPORT}`);
 })
+
 app.listen(httpServerPORT, function () {
   console.log(`Server is running at http://localhost:${httpServerPORT}`);
 });
