@@ -44,19 +44,19 @@ app.use("/category",require ("./routes/category.route"));
 app.use("/reviews", require("./routes/review.route"))
 app.use("/cart", require("./routes/cart.route"))
 
-// app.use('/err',function(req,res){
-//   throw new Error('Error!');
-// })
+app.use('/err',function(req,res){
+  throw new Error('Error!');
+})
 
-// app.use((req,res,next)=>{
-//   res.status(400).json({
-//     error: "endpoint not found!"
-//   });
-// })
-// app.use((err,req,res,next)=>{
-//   console.error(err.stack)
-//   res.status(500).json({error_message:"something_broke"});
-// })
+app.use((req,res,next)=>{
+  res.status(400).json({
+    error: "endpoint not found!"
+  });
+})
+app.use((err,req,res,next)=>{
+  console.error(err.stack)
+  res.status(500).json({error_message:"something_broke"});
+})
 
 
 
