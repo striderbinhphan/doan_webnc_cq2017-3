@@ -60,9 +60,7 @@ const socketIo = require("socket.io")(server, {
       origin: "*",
   }
 }); 
-server.listen(3030, () => {
-  console.log('Socket Server đang chay tren cong 3030');
-})
+
 // nhớ thêm cái cors này để tránh bị Exception nhé :D  ở đây mình làm nhanh nên cho phép tất cả các trang đều cors được. 
 
 
@@ -79,7 +77,12 @@ socket.on("disconnect", () => {
 });
 });
 
-const PORT = process.env.PORT;
-app.listen(PORT, function () {
-  console.log(`Server is running at http://localhost:${PORT}`);
+const socketIOPORT = process.env.socketIOPORT||5000;
+
+server.listen(socketIOPORT, () => {
+  console.log(`Socket Server đang chay tren cong ${socketIOPORT}`);
+})
+const serverPORT = process.env.serverPORT;
+app.listen(serverPORT, function () {
+  console.log(`Server is running at http://localhost:${serverPORT}`);
 });
