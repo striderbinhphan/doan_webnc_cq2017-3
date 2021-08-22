@@ -6,8 +6,7 @@ require('dotenv').config();
 const app = express();
 const http = require("http");
 
-const socketIOPORT = process.env.socketIOPORT;
-const PORT = process.env.PORT;
+const PORT = process.env.PORT|5002;
 
 
 require('express-async-errors') ;
@@ -42,6 +41,10 @@ app.use("/category",require ("./routes/category.route"));
 app.use("/reviews", require("./routes/review.route"))
 app.use("/cart", require("./routes/cart.route"))
 
+app.use('/err',function(req,res){
+  throw new Error('Error!');
+})
+
 
 
 
@@ -67,13 +70,6 @@ socketIo.on("connection", (socket) => { ///Handle khi có connect từ client t�
   });
 });
 
-server.listen(socketIOPORT, () => {
-  console.log(`Socket Server đang chay tren cong ${socketIOPORT}`);
-})
-
-app.use('/err',function(req,res){
-  throw new Error('Error!');
-})
 app.use((req,res,next)=>{
   res.status(400).json({
     error: "endpoint not found!"
@@ -84,6 +80,12 @@ app.use((err,req,res,next)=>{
   res.status(500).json({error_message:"something_broke"});
 })
 
-app.listen(PORT, function () {
-  console.log(`Server is running at http://localhost:${PORT}`);
+
+server.listen(PORT, () => {
+  console.log(`Socket Server đang chay tren cong ${PORT}`);
+})
+
+const httpServerPORT = process.env.PORT|3001;
+app.listen(httpServerPORT, function () {
+  console.log(`Server is running at http://localhost:${httpServerPORT}`);
 });
