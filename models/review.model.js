@@ -6,7 +6,9 @@ module.exports  = {
     },
     getCourseReviews(courseId)
     {
-        return db("review").where("course_id",courseId);
+        return db("review")
+        .where("course_id",courseId)
+        .orderBy("timestamp","desc");
     },
     addNewReview(feedback, rating, userId, courseId,timestamp){
         return db("review").insert({
