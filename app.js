@@ -19,6 +19,33 @@ app.get('/',function(req,res){
       message:'Hello from Online Courses API'
   });
 })
+
+let server = http.createServer(app);
+const socketIo = require("socket.io")(server, {
+  cors: {
+      origin: "*",
+  }
+}); 
+
+socketIo.on("connection", (socket) => { ///Handle khi có connect từ client tới
+  console.log("New client connected" + socket.id); 
+
+  socket.on("sendDataClient", function(data) { // Handle khi có sự kiện tên là sendDataClient từ phía client
+    console.log(data);
+    socketIo.emit("sendDataServer", { data });// phát sự kiện  có tên sendDataServer cùng với dữ liệu tin nhắn từ phía server
+  })
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected"); // Khi client disconnect thì log ra terminal.
+  });
+});
+
+
+
+server.listen(PORT, () => {
+  console.log(`Socket Server đang chay tren cong ${PORT}`);
+})
+
 app.use('/uploads',express.static(path.resolve(__dirname, './uploads')));
 //work
 app.use('/auth',require('./routes/auth.route'));
@@ -57,32 +84,6 @@ app.use((err,req,res,next)=>{
 
 
 
-
-let server = http.createServer(app);
-const socketIo = require("socket.io")(server, {
-  cors: {
-      origin: "*",
-  }
-}); 
-
-socketIo.on("connection", (socket) => { ///Handle khi có connect từ client tới
-  console.log("New client connected" + socket.id); 
-
-  socket.on("sendDataClient", function(data) { // Handle khi có sự kiện tên là sendDataClient từ phía client
-    console.log(data);
-    socketIo.emit("sendDataServer", { data });// phát sự kiện  có tên sendDataServer cùng với dữ liệu tin nhắn từ phía server
-  })
-
-  socket.on("disconnect", () => {
-    console.log("Client disconnected"); // Khi client disconnect thì log ra terminal.
-  });
-});
-
-
-
-server.listen(PORT, () => {
-  console.log(`Socket Server đang chay tren cong ${PORT}`);
-})
 
 const httpServerPORT = process.env.PORT|3001;
 app.listen(httpServerPORT, function () {
