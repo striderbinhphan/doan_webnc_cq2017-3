@@ -20,25 +20,6 @@ app.get('/',function(req,res){
   });
 })
 
-let server = http.createServer(app);
-const socketIo = require("socket.io")(server, {
-  cors: {
-      origin: "*",
-  }
-}); 
-
-socketIo.on("connection", (socket) => { ///Handle khi có connect từ client tới
-  console.log("New client connected" + socket.id); 
-
-  socket.on("sendDataClient", function(data) { // Handle khi có sự kiện tên là sendDataClient từ phía client
-    console.log(data);
-    socketIo.emit("sendDataServer", { data });// phát sự kiện  có tên sendDataServer cùng với dữ liệu tin nhắn từ phía server
-  })
-
-  socket.on("disconnect", () => {
-    console.log("Client disconnected"); // Khi client disconnect thì log ra terminal.
-  });
-});
 
 
 
@@ -67,22 +48,41 @@ app.use("/category",require ("./routes/category.route"));
 app.use("/reviews", require("./routes/review.route"))
 app.use("/cart", require("./routes/cart.route"))
 
-app.use('/err',function(req,res){
-  throw new Error('Error!');
-})
+// app.use('/err',function(req,res){
+//   throw new Error('Error!');
+// })
 
-app.use((req,res,next)=>{
-  res.status(400).json({
-    error: "endpoint not found!"
+// app.use((req,res,next)=>{
+//   res.status(400).json({
+//     error: "endpoint not found!"
+//   });
+// })
+// app.use((err,req,res,next)=>{
+//   console.error(err.stack)
+//   res.status(500).json({error_message:"something_broke"});
+// })
+
+
+
+let server = http.createServer(app);
+const socketIo = require("socket.io")(server, {
+  cors: {
+      origin: "*",
+  }
+}); 
+
+socketIo.on("connection", (socket) => { ///Handle khi có connect từ client tới
+  console.log("New client connected" + socket.id); 
+
+  socket.on("sendDataClient", function(data) { // Handle khi có sự kiện tên là sendDataClient từ phía client
+    console.log(data);
+    socketIo.emit("sendDataServer", { data });// phát sự kiện  có tên sendDataServer cùng với dữ liệu tin nhắn từ phía server
+  })
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected"); // Khi client disconnect thì log ra terminal.
   });
-})
-app.use((err,req,res,next)=>{
-  console.error(err.stack)
-  res.status(500).json({error_message:"something_broke"});
-})
-
-
-
+});
 
 
 const httpServerPORT = process.env.PORT|3001;
