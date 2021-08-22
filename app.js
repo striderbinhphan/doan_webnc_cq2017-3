@@ -1,17 +1,16 @@
 
 const express = require('express');
+const app = express();
 const morgan = require('morgan');
 const cors = require('cors')
 require('dotenv').config();
-const app = express();
 const http = require("http");
+const PORT = process.env.PORT||5000;
+const path = require('path')
 
-const PORT = process.env.PORT|5002;
 
 
 require('express-async-errors') ;
-const path = require('path')
-const {userGuard, lecturerGuard} = require('./middlewares/auth.mdw')
 app.use(express.json());
 app.use(cors())
 app.use(morgan('dev'));
@@ -45,6 +44,15 @@ app.use('/err',function(req,res){
   throw new Error('Error!');
 })
 
+app.use((req,res,next)=>{
+  res.status(400).json({
+    error: "endpoint not found!"
+  });
+})
+app.use((err,req,res,next)=>{
+  console.error(err.stack)
+  res.status(500).json({error_message:"something_broke"});
+})
 
 
 
@@ -70,15 +78,6 @@ socketIo.on("connection", (socket) => { ///Handle khi có connect từ client t�
   });
 });
 
-app.use((req,res,next)=>{
-  res.status(400).json({
-    error: "endpoint not found!"
-  });
-})
-app.use((err,req,res,next)=>{
-  console.error(err.stack)
-  res.status(500).json({error_message:"something_broke"});
-})
 
 
 server.listen(PORT, () => {
