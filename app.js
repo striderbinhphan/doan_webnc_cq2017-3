@@ -6,8 +6,8 @@ require('dotenv').config();
 const app = express();
 const http = require("http");
 
-const socketIOPORT = process.env.socketIOPORT||5000;
-const httpServerPORT = process.env.serverPORT;
+const socketIOPORT = process.env.socketIOPORT;
+const PORT = process.env.PORT;
 
 
 require('express-async-errors') ;
@@ -84,6 +84,6 @@ app.use((err,req,res,next)=>{
   res.status(500).json({error_message:"something_broke"});
 })
 
-app.listen(httpServerPORT, function () {
-  console.log(`Server is running at http://localhost:${httpServerPORT}`);
+app.listen(PORT, function () {
+  console.log(`Server is running at http://localhost:${PORT}`);
 });
