@@ -23,10 +23,6 @@ app.get('/',function(req,res){
 
 
 
-server.listen(PORT, () => {
-  console.log(`Socket Server đang chay tren cong ${PORT}`);
-})
-
 app.use('/uploads',express.static(path.resolve(__dirname, './uploads')));
 //work
 app.use('/auth',require('./routes/auth.route'));
@@ -84,6 +80,10 @@ socketIo.on("connection", (socket) => { ///Handle khi có connect từ client t�
   });
 });
 
+
+server.listen(PORT, () => {
+  console.log(`Socket Server đang chay tren cong ${PORT}`);
+})
 
 const httpServerPORT = process.env.PORT|3001;
 app.listen(httpServerPORT, function () {
