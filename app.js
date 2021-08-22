@@ -82,7 +82,7 @@ const socketIOPORT = process.env.socketIOPORT||5000;
 server.listen(socketIOPORT, () => {
   console.log(`Socket Server đang chay tren cong ${socketIOPORT}`);
 })
-const serverPORT = process.env.serverPORT;
+const serverPORT = process.env.serverPORT||3001;
 app.listen(serverPORT, function () {
   console.log(`Server is running at http://localhost:${serverPORT}`);
 });
