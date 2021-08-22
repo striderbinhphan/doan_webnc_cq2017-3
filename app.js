@@ -7,7 +7,7 @@ const app = express();
 const http = require("http");
 
 const socketIOPORT = process.env.socketIOPORT||5000;
-const httpServerPORT = process.env.serverPORT|3001;
+const httpServerPORT = process.env.serverPORT;
 
 
 require('express-async-errors') ;
@@ -43,19 +43,6 @@ app.use("/reviews", require("./routes/review.route"))
 app.use("/cart", require("./routes/cart.route"))
 
 
-app.use('/err',function(req,res){
-  throw new Error('Error!');
-})
-app.use((req,res,next)=>{
-  res.status(400).json({
-    error: "endpoint not found!"
-  });
-})
-app.use((err,req,res,next)=>{
-  console.error(err.stack)
-  res.status(500).json({error_message:"something_broke"});
-})
-
 
 
 
@@ -82,6 +69,19 @@ socketIo.on("connection", (socket) => { ///Handle khi có connect từ client t�
 
 server.listen(socketIOPORT, () => {
   console.log(`Socket Server đang chay tren cong ${socketIOPORT}`);
+})
+
+app.use('/err',function(req,res){
+  throw new Error('Error!');
+})
+app.use((req,res,next)=>{
+  res.status(400).json({
+    error: "endpoint not found!"
+  });
+})
+app.use((err,req,res,next)=>{
+  console.error(err.stack)
+  res.status(500).json({error_message:"something_broke"});
 })
 
 app.listen(httpServerPORT, function () {
