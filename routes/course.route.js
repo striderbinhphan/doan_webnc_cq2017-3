@@ -210,7 +210,7 @@ router.get("/query", async (req, res) => {
   const result = (categoryId==="default"||!categoryId)? await courseModel.coursesSearchByPage(search, page)
   : await courseModel.coursesSearchByPageAndCate(search,page,parseInt(categoryId));
   if (result.length === 0) {
-    return res.status(204).end();
+    return res.status(200).json({ result:[], maxPage:1 }).end();
   }
   for(let i = 0 ;i < result.length ; i++){
     let user = await userModel.isExistByUserId(result[i].user_id);
