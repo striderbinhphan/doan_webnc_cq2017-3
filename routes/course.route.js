@@ -61,6 +61,59 @@ router.get("/detail/:id", async (req, res) => {
   }
   res.status(200).json(course[0]).end();
 });
+router.get("/total/category/:catId", async (req, res) => {
+  const catId = +req.params.catId;
+  const count = await courseModel.getNumberCourseOfCategory(catId);
+  res.status(200).json(count[0]).end();
+});
+router.get('/category/:categoryId', async (req, res) => {
+  const categoryId  = +req.params.categoryId
+  const course = await courseModel.getAllByCategory(categoryId);
+  if (course.length === 0) {
+    return res.json([]).end();
+  }
+  for(let i = 0 ;i < course.length ; i++){
+    let user = await userModel.isExistByUserId(course[i].user_id);
+    course[i].lecturerFullName = user.user_name;
+    course[i].lecturerImage  = user.user_image;
+    let reviews = await reviewModel.getCourseReviews(course[i].course_id)
+    course[i].totalReviews = reviews.length;
+    if(reviews.length!==0){
+      const averageRating =
+      reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
+      reviews.length;
+      course[i].course_rv_point = parseFloat(averageRating.toFixed(1));
+    }
+    else{
+      course[i].course_rv_point  =5;
+    }
+  }
+  res.status(200).json(course).end();
+});
+router.get('/mostviewest-courses', async (req, res) => {
+  const course = await courseModel.getMostViewestCourse();
+  console.log(course);
+  if (course.length === 0) {
+    return res.status(204).end();
+  }
+  for(let i = 0 ;i < course.length ; i++){
+    let user = await userModel.isExistByUserId(course[i].user_id);
+    course[i].lecturerFullName = user.user_name;
+    course[i].lecturerImage  = user.user_image;
+    let reviews = await reviewModel.getCourseReviews(course[i].course_id)
+    course[i].totalReviews = reviews.length;
+    if(reviews.length!==0){
+      const averageRating =
+      reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
+      reviews.length;
+      course[i].course_rv_point = parseFloat(averageRating.toFixed(1));
+    }
+    else{
+      course[i].course_rv_point  =5;
+    }
+  }
+  res.status(200).json(course).end();
+});
 
 router.get("/new-courses", async (req, res) => {
   const course = await courseModel.getNewCourses();
@@ -128,6 +181,19 @@ router.delete("/delete", async (req, res) => {
   const course_id = +req.body.course_id;
   res.status(200).json(await courseModel.deleteCourse(course_id)).end;
 });
+router.patch("/disable", async (req, res) => {
+  const course_id = req.body.course_id;
+  try {
+    await courseModel.disableCourse(course_id)
+    res.status(200).json({
+      message: "Disable success",
+    });
+  } catch (err) {
+    return res.status(400).json({
+      message: err,
+    });
+  }
+});
 
 router.get("/feedback/:id", async (req, res) => {
   const id = +req.params.id;
@@ -139,10 +205,28 @@ router.get("/feedback/:id", async (req, res) => {
 });
 router.get("/query", async (req, res) => {
   const search = req.query.search;
+  const categoryId = req.query.categoryId;
   const page = +req.query.page;
-  const result = await courseModel.coursesSearchByPage(search, page);
+  const result = (categoryId==="default"||!categoryId)? await courseModel.coursesSearchByPage(search, page)
+  : await courseModel.coursesSearchByPageAndCate(search,page,parseInt(categoryId));
   if (result.length === 0) {
     return res.status(200).json({ result:[], maxPage:1 }).end();
+  }
+  for(let i = 0 ;i < result.length ; i++){
+    let user = await userModel.isExistByUserId(result[i].user_id);
+    result[i].lecturerFullName = user.user_name;
+    result[i].lecturerImage  = user.user_image;
+    let reviews = await reviewModel.getCourseReviews(result[i].course_id)
+    result[i].totalReviews = reviews.length;
+    if(reviews.length!==0){
+      const averageRating =
+      reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
+      reviews.length;
+      result[i].course_rv_point = parseFloat(averageRating.toFixed(1));
+    }
+    else{
+      result[i].course_rv_point  =5;
+    }
   }
   const all = await courseModel.coursesSearchAll(search);
   const maxPage = Math.ceil(all.length / limit_of_page);
@@ -213,6 +297,7 @@ router.get("/:courseId", roleVerify, async (req, res) => {
   if (course === null) {
     return res.status(204).json({ message: "Course id not found" });
   }
+  await courseModel.addViewEvent(courseId);
   //console.log([course]);
   const resCourse = await setCourse(
     accessTokenPayload.user_id,
@@ -221,7 +306,8 @@ router.get("/:courseId", roleVerify, async (req, res) => {
   );
   res.status(200).json(resCourse[0]);
 });
-router.post("/", lecturerGuard, async (req, res) => {
+const courseSchema  = require('../schemas/course.schema.json')
+router.post("/", lecturerGuard,require('../middlewares/validate.mdw')(courseSchema), async (req, res) => {
   const { accessTokenPayload } = req;
   const {
     courseName,

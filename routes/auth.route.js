@@ -9,17 +9,64 @@ const authServices = require("../services/auth.services");
 const STATUS_VERIFY = process.env.STATUS_VERIFY || "verify";
 const STATUS_ACTIVE = process.env.STATUS_ACTIVE || "active";
 const STATUS_UPDATE = process.env.STATUS_UPDATE || "update";
+const STATUS_DISABLED = process.env.STATUS_DISABLED ||"disabled"
 
 const SECRET_KEY = process.env.SECRET_KEY || "HCMUSWEBNC";
 
-const ROLE_STUDENT = process.env.ROLE_STUDENT || "student";
+const ROLE_LEARNER = process.env.ROLE_LEARNER || "learner";
 const ROLE_LECTURER = process.env.ROLE_LECTURER || "lecturer";
 const ROLE_ADMIN = process.env.ROLE_ADMIN || "admin";
 
 router.get("/", (req, res) => {
   res.json({ hello: "hello from auth services" });
 });
-router.post("/login", async (req, res) => {
+const loginSchema  = require('../schemas/login.schema.json')
+router.post("/login",require('../middlewares/validate.mdw')(loginSchema), async (req, res) => {
+  const user = await userModel.isExistByUsername(req.body.username);
+  if (user === null) {
+    return res.status(200).json({
+      authenticated: "fail",
+      message: "Username not exist! Try again",
+    });
+  }
+  if (user.user_status === STATUS_DISABLED) {
+    return res.status(200).json({
+      authenticated: "disabled",
+      message: "Your account is disabled by Admin. Contact them via Webnncq2017@gmail.com",
+    });
+  }
+  if (!bcrypt.compareSync(req.body.password, user.user_password)) {
+    return res.status(200).json({
+      authenticated: "fail",
+      message: "Wrong password! Try again",
+    });
+  }
+  if (user.user_status === STATUS_VERIFY) {
+    return res.status(200).json({
+      authenticated: "verify",
+      message: "Please verify your account! Try again",
+    });
+  }
+ 
+  const payload = {
+    user_id: user.user_id,
+    user_username: user.user_username,
+    user_email: user.user_email,
+    user_role: user.user_role,
+  };
+  const opts = {
+    expiresIn: 5 * 60,
+  };
+  const accessToken = jwt.sign(payload, SECRET_KEY, opts);
+  const refreshToken = randomString.generate(128);
+  await userModel.addRFTokenToDB(user.user_id, refreshToken);
+  res.status(200).json({
+    authenticated: "success",
+    accessToken,
+    refreshToken,
+  });
+});
+router.post("/admin/login",require('../middlewares/validate.mdw')(loginSchema), async (req, res) => {
   const user = await userModel.isExistByUsername(req.body.username);
   if (user === null) {
     return res.status(200).json({
@@ -33,10 +80,10 @@ router.post("/login", async (req, res) => {
       message: "Wrong password! Try again",
     });
   }
-  if (user.user_status === STATUS_VERIFY) {
+  if (user.user_role !== ROLE_ADMIN) {
     return res.status(200).json({
-      authenticated: "verify",
-      message: "Please verify your account! Try again",
+      authenticated: "fail",
+      message: "Your account is not admin account",
     });
   }
 
@@ -58,7 +105,8 @@ router.post("/login", async (req, res) => {
     refreshToken,
   });
 });
-router.post("/register", async (req, res) => {
+const registerSchema  = require('../schemas/register.schema.json')
+router.post("/register",require('../middlewares/validate.mdw')(registerSchema), async (req, res) => {
   const user = req.body;
   console.log(user);
   const isExistUsername = await userModel.isExistByUsername(
@@ -77,7 +125,7 @@ router.post("/register", async (req, res) => {
   }
 
   user.user_status = STATUS_VERIFY;
-  user.user_role = ROLE_STUDENT;
+  user.user_role = ROLE_LEARNER;
 
   const otpCode = authServices.generateOTPCode();
   const otpToken = authServices.generateOTPToken(otpCode);
@@ -115,21 +163,15 @@ router.post("/lecturer-register", async (req, res) => {
     });
   }
 
-  user.user_status = STATUS_VERIFY;
+  user.user_status = STATUS_ACTIVE;
   user.user_role = ROLE_LECTURER;
 
-  const otpCode = authServices.generateOTPCode();
-  const otpToken = authServices.generateOTPToken(otpCode);
-  //console.log(otpCode,otpToken,authServices.checkOTPValid(otpCode,otpToken));
-  const result = await authServices.sendMail(req.body.user_email, otpCode);
   //console.log(result);
-  user.user_accessotp = otpToken;
   user.user_password = bcrypt.hashSync(user.user_password, 10);
   const ret = await userModel.addNewUser(user);
 
   user.user_id = ret[0];
   delete user.user_password;
-  delete user.user_accessotp;
   delete user.user_status;
   res.status(201).json(user);
 });

@@ -52,6 +52,24 @@ router.get('/all-lecture',async (req,res)=>{
     }
     res.status(200).json(result).end();
 });
+router.get("/all-disable-lecture", async (req, res) => {
+    const page = +req.query.page;
+    const result = await userModel.allDisableLecture(page);
+    if (result.length === 0) {
+      return res.status(204).end();
+    }
+    res.status(200).json(result).end();
+  });
+  router.get("/all-disable-learner", async (req, res) => {
+    const page = +req.query.page;
+    const result = await userModel.allDisableLearner(page);
+    if (result.length === 0) {
+      return res.status(204).end();
+    }
+    res.status(200).json(result).end();
+  });
+
+
 router.get('/me',userGuard,async (req,res)=>{
     const {accessTokenPayload} = req;
     const user = await userModel.isExistByUsername(accessTokenPayload.user_username);
@@ -83,6 +101,7 @@ router.get('/:userId',async (req,res)=>{
         organization: user.user_organization
     }).end();
 });
+
 router.get('/lecturer/:userId',async (req,res)=>{
     const userId = req.params.userId;
     const user = await userModel.isExistByUserId(userId);
@@ -99,6 +118,35 @@ router.get('/lecturer/:userId',async (req,res)=>{
         organization: user.user_organization
     }).end();
 });
+
+router.patch("/disable", async (req, res) => {
+    const userId = req.body.userId;
+    try {
+      await userModel.disableUser(userId);
+      res.status(200).json({
+        message: "Disable success",
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err,
+      });
+    }
+  });
+  router.patch("/undisable", async (req, res) => {
+    const userId = req.body.userId;
+    try {
+      await userModel.unDisableUser(userId);
+      res.status(200).json({
+        message: "UnDisable success",
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err,
+      });
+    }
+  });
+
+
 
 router.patch('/update-info',userGuard,async(req,res)=>{
     const {fullname,firstname,lastname,dob,description,organization}= req.body;
