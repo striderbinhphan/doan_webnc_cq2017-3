@@ -83,4 +83,17 @@ router.delete('/:videoId',lecturerGuard,async (req,res)=>{
     return res.status(200).json({message:"Delete video successfully!"});
 })
 
+//api chatbot
+router.get('/section/:sectionId',async (req,res)=>{
+    const sectionId = req.params.sectionId;
+    const videos = await videoModel.getAllVideoBySectionIdLiteral(sectionId);
+    
+    return res.status(200).json(videos);
+})
+
+router.get('/:videoId',async (req,res)=>{
+    const videoId = req.params.videoId;
+    const videoFromDB = await videoModel.getVideoByVideoId(videoId);
+    return res.status(200).json(videoFromDB);
+})
 module.exports = router;

@@ -11,6 +11,7 @@
 			"pattern": "^.*$"
 		},
 		"rating": {
+			"type": "number",
 			"default": 5,
             "minimum": 0.1,
             "maximum": 5

@@ -101,6 +101,24 @@ router.get('/:userId',async (req,res)=>{
         organization: user.user_organization
     }).end();
 });
+
+router.get('/lecturer/:userId',async (req,res)=>{
+    const userId = req.params.userId;
+    const user = await userModel.isExistByUserId(userId);
+    res.json({
+        userId :user.user_id,
+        username: user.user_username,
+        fullname: user.user_name,
+        firstname: user.user_firstname,
+        lastname: user.user_lastname,
+        email: user.user_email,
+        dob: user.user_dob,
+        image: user.user_image,
+        description: user.user_description,
+        organization: user.user_organization
+    }).end();
+});
+
 router.patch("/disable", async (req, res) => {
     const userId = req.body.userId;
     try {
@@ -127,6 +145,7 @@ router.patch("/disable", async (req, res) => {
       });
     }
   });
+
 
 
 router.patch('/update-info',userGuard,async(req,res)=>{
