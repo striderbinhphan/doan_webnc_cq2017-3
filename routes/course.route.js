@@ -194,6 +194,20 @@ router.patch("/disable", async (req, res) => {
     });
   }
 });
+router.patch("/undisable", async (req, res) => {
+  const course_id = req.body.course_id;
+  try {
+    await courseModel.unDisableCourse(course_id)
+    res.status(200).json({
+      message: "Undisable success",
+    });
+  } catch (err) {
+    return res.status(400).json({
+      message: err,
+    });
+  }
+});
+
 
 router.get("/feedback/:id", async (req, res) => {
   const id = +req.params.id;
@@ -264,6 +278,23 @@ router.get("/", roleVerify, async (req, res) => {
   const { accessTokenPayload } = req;
   const page = req.query.page || 1;
   const courseList = await courseModel.allCoursesForGuest(page);
+
+  if (courseList === null) {
+    return res.status(204).json({ message: "Course empty" });
+  }
+  const all = await courseModel.all();
+  const maxPage = Math.ceil(all.length / limit_of_page);
+  const result = await setCourse(
+    accessTokenPayload.user_id,
+    accessTokenPayload.user_role,
+    courseList
+  );
+  res.status(200).json({ result, maxPage });
+});
+router.get("/disable", roleVerify, async (req, res) => {
+  const { accessTokenPayload } = req;
+  const page = req.query.page || 1;
+  const courseList = await courseModel.allDisableCoursesForGuest(page);
 
   if (courseList === null) {
     return res.status(204).json({ message: "Course empty" });

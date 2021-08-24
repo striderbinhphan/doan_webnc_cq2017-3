@@ -40,8 +40,18 @@ module.exports = {
   updateCourse(courseId, course) {
     return db("course").where("course_id", courseId).update(course);
   },
+  unDisableCourse(course_id){
+    return db('course').where("course_id",course_id).update({course_isdisable:0})
+},
   allCoursesForGuest(page) {
     return db("course").where("course_isdisable",0)
+    .innerJoin('user','user.user_id','course.user_id')
+    .innerJoin('category','category.category_id','course.category_id');
+    // .limit(limit_of_page)
+    // .offset((page - 1) * limit_of_page);
+  },
+  allDisableCoursesForGuest(page) {
+    return db("course").where("course_isdisable",1)
     .innerJoin('user','user.user_id','course.user_id')
     .innerJoin('category','category.category_id','course.category_id');
     // .limit(limit_of_page)
