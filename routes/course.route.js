@@ -66,50 +66,48 @@ router.get("/total/category/:catId", async (req, res) => {
   const count = await courseModel.getNumberCourseOfCategory(catId);
   res.status(200).json(count[0]).end();
 });
-router.get('/category/:categoryId', async (req, res) => {
-  const categoryId  = +req.params.categoryId
+router.get("/category/:categoryId", async (req, res) => {
+  const categoryId = +req.params.categoryId;
   const course = await courseModel.getAllByCategory(categoryId);
   if (course.length === 0) {
     return res.json([]).end();
   }
-  for(let i = 0 ;i < course.length ; i++){
+  for (let i = 0; i < course.length; i++) {
     let user = await userModel.isExistByUserId(course[i].user_id);
     course[i].lecturerFullName = user.user_name;
-    course[i].lecturerImage  = user.user_image;
-    let reviews = await reviewModel.getCourseReviews(course[i].course_id)
+    course[i].lecturerImage = user.user_image;
+    let reviews = await reviewModel.getCourseReviews(course[i].course_id);
     course[i].totalReviews = reviews.length;
-    if(reviews.length!==0){
+    if (reviews.length !== 0) {
       const averageRating =
-      reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
-      reviews.length;
+        reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
+        reviews.length;
       course[i].course_rv_point = parseFloat(averageRating.toFixed(1));
-    }
-    else{
-      course[i].course_rv_point  =5;
+    } else {
+      course[i].course_rv_point = 5;
     }
   }
   res.status(200).json(course).end();
 });
-router.get('/mostviewest-courses', async (req, res) => {
+router.get("/mostviewest-courses", async (req, res) => {
   const course = await courseModel.getMostViewestCourse();
   console.log(course);
   if (course.length === 0) {
     return res.status(204).end();
   }
-  for(let i = 0 ;i < course.length ; i++){
+  for (let i = 0; i < course.length; i++) {
     let user = await userModel.isExistByUserId(course[i].user_id);
     course[i].lecturerFullName = user.user_name;
-    course[i].lecturerImage  = user.user_image;
-    let reviews = await reviewModel.getCourseReviews(course[i].course_id)
+    course[i].lecturerImage = user.user_image;
+    let reviews = await reviewModel.getCourseReviews(course[i].course_id);
     course[i].totalReviews = reviews.length;
-    if(reviews.length!==0){
+    if (reviews.length !== 0) {
       const averageRating =
-      reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
-      reviews.length;
+        reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
+        reviews.length;
       course[i].course_rv_point = parseFloat(averageRating.toFixed(1));
-    }
-    else{
-      course[i].course_rv_point  =5;
+    } else {
+      course[i].course_rv_point = 5;
     }
   }
   res.status(200).json(course).end();
@@ -120,20 +118,19 @@ router.get("/new-courses", async (req, res) => {
   if (course.length === 0) {
     return res.status(204).end();
   }
-  for(let i = 0 ;i < course.length ; i++){
+  for (let i = 0; i < course.length; i++) {
     let user = await userModel.isExistByUserId(course[i].user_id);
     course[i].lecturerFullName = user.user_name;
-    course[i].lecturerImage  = user.user_image;
-    let reviews = await reviewModel.getCourseReviews(course[i].course_id)
+    course[i].lecturerImage = user.user_image;
+    let reviews = await reviewModel.getCourseReviews(course[i].course_id);
     course[i].totalReviews = reviews.length;
-    if(reviews.length!==0){
+    if (reviews.length !== 0) {
       const averageRating =
-      reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
-      reviews.length;
+        reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
+        reviews.length;
       course[i].course_rv_point = parseFloat(averageRating.toFixed(1));
-    }
-    else{
-      course[i].course_rv_point  =5;
+    } else {
+      course[i].course_rv_point = 5;
     }
   }
   res.status(200).json(course).end();
@@ -144,34 +141,41 @@ router.get("/hot-courses", async (req, res) => {
   if (course.length === 0) {
     return res.status(204).end();
   }
-  for(let i = 0 ;i < course.length ; i++){
+  for (let i = 0; i < course.length; i++) {
     let user = await userModel.isExistByUserId(course[i].user_id);
     course[i].lecturerFullName = user.user_name;
-    course[i].lecturerImage  = user.user_image;
-    let reviews = await reviewModel.getCourseReviews(course[i].course_id)
+    course[i].lecturerImage = user.user_image;
+    let reviews = await reviewModel.getCourseReviews(course[i].course_id);
     course[i].totalReviews = reviews.length;
   }
   res.status(200).json(course).end();
+});
+router.get("/featured-courses", async (req, res) => {
+  const result = await courseModel.getFeaturedCourse();
+  if (result.length === 0) {
+    console.log("Khong co course nao");
+    return res.status(204).end();
+  }
+  res.status(200).json(result).end();
 });
 router.get("/popular-courses", async (req, res) => {
   const course = await courseModel.getPopularCourses();
   if (course.length === 0) {
     return res.status(204).end();
   }
-  for(let i = 0 ;i < course.length ; i++){
+  for (let i = 0; i < course.length; i++) {
     let user = await userModel.isExistByUserId(course[i].user_id);
     course[i].lecturerFullName = user.user_name;
-    course[i].lecturerImage  = user.user_image;
-    let reviews = await reviewModel.getCourseReviews(course[i].course_id)
+    course[i].lecturerImage = user.user_image;
+    let reviews = await reviewModel.getCourseReviews(course[i].course_id);
     course[i].totalReviews = reviews.length;
-    if(reviews.length!==0){
+    if (reviews.length !== 0) {
       const averageRating =
-      reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
-      reviews.length;
+        reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
+        reviews.length;
       course[i].course_rv_point = parseFloat(averageRating.toFixed(1));
-    }
-    else{
-      course[i].course_rv_point  =5;
+    } else {
+      course[i].course_rv_point = 5;
     }
   }
   res.status(200).json(course).end();
@@ -184,7 +188,7 @@ router.delete("/delete", async (req, res) => {
 router.patch("/disable", async (req, res) => {
   const course_id = req.body.course_id;
   try {
-    await courseModel.disableCourse(course_id)
+    await courseModel.disableCourse(course_id);
     res.status(200).json({
       message: "Disable success",
     });
@@ -197,7 +201,7 @@ router.patch("/disable", async (req, res) => {
 router.patch("/undisable", async (req, res) => {
   const course_id = req.body.course_id;
   try {
-    await courseModel.unDisableCourse(course_id)
+    await courseModel.unDisableCourse(course_id);
     res.status(200).json({
       message: "Undisable success",
     });
@@ -207,7 +211,6 @@ router.patch("/undisable", async (req, res) => {
     });
   }
 });
-
 
 router.get("/feedback/:id", async (req, res) => {
   const id = +req.params.id;
@@ -221,25 +224,30 @@ router.get("/query", async (req, res) => {
   const search = req.query.search;
   const categoryId = req.query.categoryId;
   const page = +req.query.page;
-  const result = (categoryId==="default"||!categoryId)? await courseModel.coursesSearchByPage(search, page)
-  : await courseModel.coursesSearchByPageAndCate(search,page,parseInt(categoryId));
+  const result =
+    categoryId === "default" || !categoryId
+      ? await courseModel.coursesSearchByPage(search, page)
+      : await courseModel.coursesSearchByPageAndCate(
+          search,
+          page,
+          parseInt(categoryId)
+        );
   if (result.length === 0) {
-    return res.status(200).json({ result:[], maxPage:1 }).end();
+    return res.status(200).json({ result: [], maxPage: 1 }).end();
   }
-  for(let i = 0 ;i < result.length ; i++){
+  for (let i = 0; i < result.length; i++) {
     let user = await userModel.isExistByUserId(result[i].user_id);
     result[i].lecturerFullName = user.user_name;
-    result[i].lecturerImage  = user.user_image;
-    let reviews = await reviewModel.getCourseReviews(result[i].course_id)
+    result[i].lecturerImage = user.user_image;
+    let reviews = await reviewModel.getCourseReviews(result[i].course_id);
     result[i].totalReviews = reviews.length;
-    if(reviews.length!==0){
+    if (reviews.length !== 0) {
       const averageRating =
-      reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
-      reviews.length;
+        reviews.map((r) => r.review_rating).reduce((a, b) => a + b) /
+        reviews.length;
       result[i].course_rv_point = parseFloat(averageRating.toFixed(1));
-    }
-    else{
-      result[i].course_rv_point  =5;
+    } else {
+      result[i].course_rv_point = 5;
     }
   }
   const all = await courseModel.coursesSearchAll(search);
@@ -314,9 +322,7 @@ router.get("/me", lecturerGuard, async (req, res) => {
     accessTokenPayload.user_id
   );
   if (courseList === null) {
-    return res
-      .status(200)
-      .json([]);
+    return res.status(200).json([]);
   }
   res.status(200).json(courseList);
 });
@@ -337,41 +343,45 @@ router.get("/:courseId", roleVerify, async (req, res) => {
   );
   res.status(200).json(resCourse[0]);
 });
-const courseSchema  = require('../schemas/course.schema.json')
-router.post("/", lecturerGuard,require('../middlewares/validate.mdw')(courseSchema), async (req, res) => {
-  const { accessTokenPayload } = req;
-  const {
-    courseName,
-    shortDescription,
-    categoryId,
-    price,
-    saleoff,
-    sectionCount,
-  } = req.body;
-  try {
-    let course = {
-      course_name: courseName,
-      course_shortdescription: shortDescription,
-      category_id: categoryId,
-      user_id: accessTokenPayload.user_id,
-      price: price,
-      saleoff: saleoff,
-      section_count: sectionCount,
-      course_status: false,
-      last_update: new Date(),
-      created_date: new Date(),
-
-    };
-    const courseAdded = await courseModel.addNewCourse(course);
-    const cAdded = await courseModel.getCourseById(courseAdded[0]);
-    res.status(201).json({
-      message: "Create new Course successfully",
-      newCourse: cAdded,
-    });
-  } catch (err) {
-    return res.json({ message: err }).status(204);
+const courseSchema = require("../schemas/course.schema.json");
+router.post(
+  "/",
+  lecturerGuard,
+  require("../middlewares/validate.mdw")(courseSchema),
+  async (req, res) => {
+    const { accessTokenPayload } = req;
+    const {
+      courseName,
+      shortDescription,
+      categoryId,
+      price,
+      saleoff,
+      sectionCount,
+    } = req.body;
+    try {
+      let course = {
+        course_name: courseName,
+        course_shortdescription: shortDescription,
+        category_id: categoryId,
+        user_id: accessTokenPayload.user_id,
+        price: price,
+        saleoff: saleoff,
+        section_count: sectionCount,
+        course_status: false,
+        last_update: new Date(),
+        created_date: new Date(),
+      };
+      const courseAdded = await courseModel.addNewCourse(course);
+      const cAdded = await courseModel.getCourseById(courseAdded[0]);
+      res.status(201).json({
+        message: "Create new Course successfully",
+        newCourse: cAdded,
+      });
+    } catch (err) {
+      return res.json({ message: err }).status(204);
+    }
   }
-});
+);
 router.patch("/:courseId", lecturerGuard, async (req, res) => {
   const courseId = req.params.courseId;
   const {
@@ -414,9 +424,7 @@ router.patch("/:courseId", lecturerGuard, async (req, res) => {
 });
 router.patch("/:courseId/description", lecturerGuard, async (req, res) => {
   const courseId = req.params.courseId;
-  const {
-    description
-  } = req.body;
+  const { description } = req.body;
   const { accessTokenPayload } = req;
   const course = await courseModel.getCourseById(courseId);
   if (course === null) {
@@ -482,9 +490,9 @@ router.patch(
     //console.log(course_id);
     const course_image = req.file.filename;
     await courseModel.uploadCourseImage(course_id, course_image);
-    res.status(201).json({ 
+    res.status(201).json({
       message: "Upload course image successfully",
-      newImage: course_image 
+      newImage: course_image,
     });
   }
 );
@@ -592,7 +600,9 @@ async function getCourseDetail(course) {
     }
   }
   course.sections = courseSections;
-  course.totalStudent = await courseSubscribeModel.getTotalStudents(course.course_id);
+  course.totalStudent = await courseSubscribeModel.getTotalStudents(
+    course.course_id
+  );
   const reviews = await reviewModel.getCourseReviews(course.course_id);
   if (reviews.length === 0) {
     course.totalReview = 0;
