@@ -263,7 +263,7 @@ module.exports = {
       .where("user_view_event.date", ">", date)
       .where("course_isdisable", 0)
       .groupBy("course.course_id")
-      .orderBy("user_view_event.viewcount", "desc")
+      .orderBy("slview", "desc")
       .limit(10);
   },
   async addViewEvent(courseId) {
